@@ -23,7 +23,7 @@ func Run() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-	api := r.Group("apiV1")
+	api := r.Group("api/v1")
 	InitRoute(api)
 
 	srv := &http.Server{

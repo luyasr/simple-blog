@@ -57,7 +57,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 				httpRequest, _ := httputil.DumpRequest(c.Request, false)
 				if brokenPipe {
 					L.Error().
-						Any("error", err).
+						Any("errors", err).
 						Str("request", string(httpRequest)).Send()
 					// If the connection is dead, we can't write a status to it.
 					c.Error(err.(error)) // nolint: errcheck
@@ -67,12 +67,12 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 
 				if stack {
 					L.Error().
-						Any("error", err).
+						Any("errors", err).
 						Str("request", string(httpRequest)).
 						Str("stack", string(debug.Stack())).Send()
 				} else {
 					L.Error().
-						Any("error", err).
+						Any("errors", err).
 						Str("request", string(httpRequest)).Send()
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)

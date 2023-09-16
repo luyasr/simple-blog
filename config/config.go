@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"path"
+	"runtime"
 	"strings"
 	"sync"
 )
@@ -25,7 +27,7 @@ type Server struct {
 type Mysql struct {
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
-	DB       string `json:"database"`
+	DataBase string `json:"database"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Conn     *gorm.DB
@@ -36,8 +38,14 @@ func init() {
 	NewConfig()
 }
 
+func rootPath() string {
+	_, filename, _, _ := runtime.Caller(0)
+	root := path.Dir(path.Dir(filename))
+	return root
+}
+
 func NewConfig() {
-	viper.AddConfigPath(".")
+	viper.AddConfigPath(fmt.Sprintf("%s", rootPath()))
 	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -46,7 +54,7 @@ func NewConfig() {
 	viper.SetEnvKeyReplacer(replacer)
 
 	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal errors config file: %s \n", err))
 	}
 
 	if err := viper.Unmarshal(C); err != nil {
@@ -68,7 +76,7 @@ func (m *Mysql) DSN() string {
 		m.Password,
 		m.Host,
 		m.Port,
-		m.DB)
+		m.DataBase)
 }
 
 func (m *Mysql) GetConn() *gorm.DB {
