@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,10 +44,6 @@ func NewCreateUserRequest() *CreateUserRequest {
 }
 
 func (req *CreateUserRequest) PasswordHash() {
-	if req.Password == "" {
-		return
-	}
-
 	bytes, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	req.Password = string(bytes)
 }
