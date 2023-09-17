@@ -14,12 +14,6 @@ import (
 	"time"
 )
 
-type Response struct {
-	Code int    `json:"code"`
-	Data any    `json:"data"`
-	Msg  string `json:"msg"`
-}
-
 func Run() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
