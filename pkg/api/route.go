@@ -6,7 +6,9 @@ func InitRoute(route *gin.RouterGroup) {
 	route.GET("ping", Ping)
 	user := route.Group("user")
 	{
-		user.GET("", UserList)
-		user.POST("id", CreateUser)
+		user.POST("", CreateUser)
+		user.DELETE("id", DeleteUser)
+		user.PUT("id", UpdateUser)
+		user.GET("username", DescribeUser)
 	}
 }

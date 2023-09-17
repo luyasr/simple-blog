@@ -29,7 +29,7 @@ func TestUserServiceImpl_CreateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DeleteUser(t *testing.T) {
-	err := usrSvc.DeleteUser(ctx, &user.DeleteUserRequest{Id: 6})
+	err := usrSvc.DeleteUser(ctx, &user.DeleteUserRequest{Id: 7})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,11 +37,11 @@ func TestUserServiceImpl_DeleteUser(t *testing.T) {
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
 	req := &user.UpdateUserRequest{
-		&user.User{
-			&common.Meta{
-				Id: 6,
+		User: &user.User{
+			Meta: &common.Meta{
+				Id: 7,
 			},
-			&user.CreateUserRequest{
+			CreateUserRequest: &user.CreateUserRequest{
 				Username: "admin",
 				Role:     user.RoleAdmin,
 			},
