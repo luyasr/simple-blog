@@ -35,7 +35,7 @@ func TestUserServiceImpl_DeleteUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
-	req := user.NewUpdateUserRequest(&user.User{Meta: &common.Meta{ID: 7}})
+	req := user.NewUpdateUser(&user.User{Meta: &common.Meta{ID: 7}})
 	err := usrSvc.UpdateUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)
