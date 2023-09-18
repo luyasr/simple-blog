@@ -2,38 +2,23 @@ package user
 
 import (
 	"context"
+	"github.com/luyasr/simple-blog/common"
 
 	"golang.org/x/crypto/bcrypt"
-)
-
-// Role 用户角色
-type Role int
-
-const (
-	RoleMember Role = iota + 1
-	RoleAdmin
-)
-
-// DescribeBy 用户查询条件
-type DescribeBy int
-
-const (
-	DescribeById = iota + 1
-	DescribeByUsername
 )
 
 // Service 接口定义
 type Service interface {
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	DeleteUser(context.Context, *DeleteUserRequest) error
-	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
+	UpdateUser(context.Context, *UpdateUserRequest) error
 	DescribeUser(context.Context, *DescribeUserRequest) (*User, error)
 }
 
 // CreateUserRequest 创建用户的请求
 type CreateUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required" msg:"用户名校验失败"`
+	Password string `json:"password" binding:"required" msg:"密码校验失败"`
 	Role     Role   `json:"role"`
 }
 
@@ -53,8 +38,21 @@ type DeleteUserRequest struct {
 	Id int64 `json:"id"`
 }
 
-type UpdateUserRequest struct {
-	*User
+func NewDeleteUserRequest(id string) *DeleteUserRequest {
+	return &DeleteUserRequest{
+		Id: IdInt64(id),
+	}
+}
+
+type UpdateUserRequest = User
+
+func NewUpdateUserRequest(id string) *UpdateUserRequest {
+	return &UpdateUserRequest{
+		&common.Meta{
+			Id: IdInt64(id),
+		},
+		&CreateUserRequest{},
+	}
 }
 
 // DescribeUserRequest 查看用户的请求
@@ -65,6 +63,7 @@ type DescribeUserRequest struct {
 
 func NewDescribeUserRequestById(id string) *DescribeUserRequest {
 	return &DescribeUserRequest{
+		DescribeBy:    DescribeById,
 		DescribeValue: id,
 	}
 }

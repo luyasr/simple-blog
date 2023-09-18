@@ -7,8 +7,8 @@ func InitRoute(route *gin.RouterGroup) {
 	user := route.Group("user")
 	{
 		user.POST("", CreateUser)
-		user.DELETE("id", DeleteUser)
-		user.PUT("id", UpdateUser)
-		user.GET("username", DescribeUser)
+		user.DELETE(":id", DeleteUser)
+		user.PUT(":id", UpdateUser)
+		user.GET(":username", DescribeUser)
 	}
 }

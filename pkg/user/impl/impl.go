@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/user"
@@ -45,32 +46,32 @@ func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserRe
 	return nil
 }
 
-func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (*user.User, error) {
-	// 创建用户实例
-	ins := user.NewUser(user.NewCreateUserRequest())
-	// 用户ID作为条件更新
+func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) error {
+	// 创建用户实例更新
+	ins := user.NewDefaultUser()
 	ins.Id = req.Id
-	// 更新时间
 	req.UpdateAt = time.Now().Unix()
 	// 更新多列
 	fields, err := util.UpdateNonZeroFields(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	result := i.db.WithContext(ctx).Model(ins).Updates(fields)
 	if err = result.Error; err != nil {
-		return nil, err
+		return err
 	}
-	if affected := result.RowsAffected; affected == 0 {
-		return nil, e.NewUpdateFailed("用户 %d 已注销或不存在", ins.Id)
+	affected := result.RowsAffected
+	fmt.Println(ins, affected)
+	if affected == 0 {
+		return e.NewUpdateFailed("用户ID %d RowsAffected: 0", ins.Id)
 	}
 
-	return ins, nil
+	return nil
 }
 
 func (i *UserServiceImpl) DescribeUser(ctx context.Context, req *user.DescribeUserRequest) (*user.User, error) {
-	ins := user.NewUser(user.NewCreateUserRequest())
+	ins := user.NewDefaultUser()
 	query := i.db.WithContext(ctx)
 
 	switch req.DescribeBy {

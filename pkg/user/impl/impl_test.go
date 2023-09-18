@@ -2,7 +2,6 @@ package impl_test
 
 import (
 	"context"
-	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/user"
 	"github.com/luyasr/simple-blog/pkg/user/impl"
 	"testing"
@@ -36,22 +35,11 @@ func TestUserServiceImpl_DeleteUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
-	req := &user.UpdateUserRequest{
-		User: &user.User{
-			Meta: &common.Meta{
-				Id: 7,
-			},
-			CreateUserRequest: &user.CreateUserRequest{
-				Username: "admin",
-				Role:     user.RoleAdmin,
-			},
-		},
-	}
-	updateUser, err := usrSvc.UpdateUser(ctx, req)
+	req := user.NewUpdateUserRequest("7")
+	err := usrSvc.UpdateUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(updateUser)
 }
 
 func TestUserServiceImpl_DescribeUser(t *testing.T) {

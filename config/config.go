@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 	"path"
 	"runtime"
 	"strings"
@@ -84,7 +85,9 @@ func (m *Mysql) GetConn() *gorm.DB {
 		m.Lock.Lock()
 		defer m.Lock.Unlock()
 
-		conn, err := gorm.Open(mysql.Open(m.DSN()), &gorm.Config{})
+		conn, err := gorm.Open(mysql.Open(m.DSN()), &gorm.Config{
+			Logger: gormLogger.Default.LogMode(gormLogger.Info),
+		})
 		if err != nil {
 			panic(err)
 		}
