@@ -2,6 +2,7 @@ package user_test
 
 import (
 	"context"
+	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/user"
 	"testing"
 )
@@ -34,7 +35,7 @@ func TestUserServiceImpl_DeleteUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
-	req := user.NewUpdateUserRequest("7")
+	req := user.NewUpdateUserRequest(&user.User{Meta: &common.Meta{ID: 7}})
 	err := usrSvc.UpdateUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)

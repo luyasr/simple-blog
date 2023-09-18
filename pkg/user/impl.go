@@ -7,6 +7,7 @@ import (
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"gorm.io/gorm"
+	"time"
 )
 
 var _ Service = (*UserServiceImpl)(nil)
@@ -35,18 +36,19 @@ func (i *UserServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest
 }
 
 func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) error {
-	ins := NewUser(NewCreateUserRequest())
-	ins.Id = req.Id
+	ins := NewDefaultUser()
+	ins.ID = req.Id
 	if affected := i.db.WithContext(ctx).Delete(ins).RowsAffected; affected == 0 {
-		return e.NewUserNotExists("用户ID %d 已注销或不存在", ins.Id)
+		return e.NewUserNotExists("用户ID %d 已注销或不存在", ins.ID)
 	}
 	return nil
 }
 
 func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) error {
 	// 创建用户实例更新
-	ins := NewUpdateUserRequest(req)
+	ins := NewUpdateUser(req)
 	// 更新多列
+	req.UpdateAt = time.Now().Unix()
 	fields, err := utils.UpdateNonZeroFields(req)
 	if err != nil {
 		return err
@@ -58,7 +60,7 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户ID %d RowsAffected: 0", ins.Id)
+		return e.NewUpdateFailed("用户ID %d RowsAffected: 0", ins.ID)
 	}
 
 	return nil

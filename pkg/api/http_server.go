@@ -16,7 +16,13 @@ import (
 )
 
 func Run() {
-	gin.SetMode(gin.ReleaseMode)
+	var ginLogMode string
+	if config.C.Server.Debug {
+		ginLogMode = gin.DebugMode
+	} else {
+		ginLogMode = gin.ReleaseMode
+	}
+	gin.SetMode(ginLogMode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	api := r.Group("api/v1")

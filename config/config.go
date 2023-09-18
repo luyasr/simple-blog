@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 	"path"
+
 	"runtime"
 	"strings"
 	"sync"
@@ -22,7 +23,8 @@ type Config struct {
 }
 
 type Server struct {
-	Port int `json:"port"`
+	Port  int  `json:"port"`
+	Debug bool `json:"debug"`
 }
 
 type Mysql struct {
@@ -36,7 +38,7 @@ type Mysql struct {
 }
 
 func init() {
-	NewConfig()
+	newConfig()
 }
 
 func rootPath() string {
@@ -45,7 +47,7 @@ func rootPath() string {
 	return root
 }
 
-func NewConfig() {
+func newConfig() {
 	viper.AddConfigPath(fmt.Sprintf("%s", rootPath()))
 	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
@@ -81,12 +83,19 @@ func (m *Mysql) DSN() string {
 }
 
 func (m *Mysql) GetConn() *gorm.DB {
+	var gormLogMode gormLogger.Interface
+	if C.Server.Debug {
+		gormLogMode = gormLogger.Default.LogMode(gormLogger.Info)
+	} else {
+		gormLogMode = gormLogger.Default.LogMode(gormLogger.Silent)
+	}
+
 	if m.Conn == nil {
 		m.Lock.Lock()
 		defer m.Lock.Unlock()
 
 		conn, err := gorm.Open(mysql.Open(m.DSN()), &gorm.Config{
-			Logger: gormLogger.Default.LogMode(gormLogger.Info),
+			Logger: gormLogMode,
 		})
 		if err != nil {
 			panic(err)

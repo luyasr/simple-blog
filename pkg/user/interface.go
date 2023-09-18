@@ -5,7 +5,6 @@ import (
 	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 // Service 接口定义
@@ -20,7 +19,7 @@ type Service interface {
 type CreateUserRequest struct {
 	Username string `json:"username" binding:"required" msg:"用户名校验失败"`
 	Password string `json:"password" binding:"required" msg:"密码校验失败"`
-	Role     Role   `json:"role"`
+	Role     Role   `json:"role" binding:"required" msg:"用户角色校验失败"`
 }
 
 func NewCreateUserRequest() *CreateUserRequest {
@@ -47,12 +46,11 @@ func NewDeleteUserRequest(id string) *DeleteUserRequest {
 
 type UpdateUserRequest = User
 
-func NewUpdateUserRequest(req *UpdateUserRequest) *UpdateUserRequest {
+func NewUpdateUser(req *User) *User {
 	req.PasswordHash()
-	return &UpdateUserRequest{
+	return &User{
 		&common.Meta{
-			Id:       req.Id,
-			UpdateAt: time.Now().Unix(),
+			ID: req.ID,
 		},
 		&CreateUserRequest{},
 	}
