@@ -7,7 +7,6 @@ import (
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"gorm.io/gorm"
-	"time"
 )
 
 var _ Service = (*UserServiceImpl)(nil)
@@ -46,9 +45,7 @@ func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest
 
 func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) error {
 	// 创建用户实例更新
-	ins := NewDefaultUser()
-	ins.Id = req.Id
-	req.UpdateAt = time.Now().Unix()
+	ins := NewUpdateUserRequest(req)
 	// 更新多列
 	fields, err := utils.UpdateNonZeroFields(req)
 	if err != nil {

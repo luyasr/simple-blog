@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/response"
+	"github.com/luyasr/simple-blog/pkg/utils"
 	"net/http"
 )
 
@@ -36,7 +37,9 @@ func DeleteUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
-	req := NewUpdateUserRequest(id)
+	req := NewDefaultUser()
+	req.Id = utils.StringToInt64(id)
+
 	err := c.BindJSON(req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))

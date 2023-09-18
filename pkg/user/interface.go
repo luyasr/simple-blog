@@ -5,6 +5,7 @@ import (
 	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 // Service 接口定义
@@ -46,10 +47,12 @@ func NewDeleteUserRequest(id string) *DeleteUserRequest {
 
 type UpdateUserRequest = User
 
-func NewUpdateUserRequest(id string) *UpdateUserRequest {
+func NewUpdateUserRequest(req *UpdateUserRequest) *UpdateUserRequest {
+	req.PasswordHash()
 	return &UpdateUserRequest{
 		&common.Meta{
-			Id: utils.StringToInt64(id),
+			Id:       req.Id,
+			UpdateAt: time.Now().Unix(),
 		},
 		&CreateUserRequest{},
 	}
