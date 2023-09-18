@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/logger"
+	"github.com/luyasr/simple-blog/pkg/user"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,11 @@ func Run() {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	api := r.Group("api/v1")
-	InitRoute(api)
+	api.Use()
+	{
+		InitRoute(api)
+		user.InitUserRoute(api)
+	}
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.C.Server.Port),

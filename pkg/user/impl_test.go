@@ -1,23 +1,21 @@
-package impl_test
+package user_test
 
 import (
 	"context"
-	"github.com/luyasr/simple-blog/pkg/user"
-	"github.com/luyasr/simple-blog/pkg/user/impl"
 	"testing"
 )
 
 var (
-	usrSvc *impl.UserServiceImpl
+	usrSvc *UserServiceImpl
 	ctx    = context.Background()
 )
 
 func init() {
-	usrSvc = impl.NewUserServiceImpl()
+	usrSvc = NewUserServiceImpl()
 }
 
 func TestUserServiceImpl_CreateUser(t *testing.T) {
-	req := user.NewCreateUserRequest()
+	req := NewCreateUserRequest()
 	req.Username = "admin"
 	req.Password = "12345"
 	u, err := usrSvc.CreateUser(ctx, req)
@@ -28,14 +26,14 @@ func TestUserServiceImpl_CreateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DeleteUser(t *testing.T) {
-	err := usrSvc.DeleteUser(ctx, &user.DeleteUserRequest{Id: 7})
+	err := usrSvc.DeleteUser(ctx, &DeleteUserRequest{Id: 7})
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
-	req := user.NewUpdateUserRequest("7")
+	req := NewUpdateUserRequest("7")
 	err := usrSvc.UpdateUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)
@@ -43,7 +41,7 @@ func TestUserServiceImpl_UpdateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DescribeUser(t *testing.T) {
-	req := user.NewDescribeUserRequestByUsername("admin")
+	req := NewDescribeUserRequestByUsername("admin")
 	ins, err := usrSvc.DescribeUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)

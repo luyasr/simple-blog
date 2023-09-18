@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"github.com/luyasr/simple-blog/common"
-
+	"github.com/luyasr/simple-blog/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -40,7 +40,7 @@ type DeleteUserRequest struct {
 
 func NewDeleteUserRequest(id string) *DeleteUserRequest {
 	return &DeleteUserRequest{
-		Id: IdInt64(id),
+		Id: utils.StringToInt64(id),
 	}
 }
 
@@ -49,7 +49,7 @@ type UpdateUserRequest = User
 func NewUpdateUserRequest(id string) *UpdateUserRequest {
 	return &UpdateUserRequest{
 		&common.Meta{
-			Id: IdInt64(id),
+			Id: utils.StringToInt64(id),
 		},
 		&CreateUserRequest{},
 	}

@@ -1,4 +1,4 @@
-package api
+package response
 
 import "github.com/luyasr/simple-blog/pkg/e"
 
