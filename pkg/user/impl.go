@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/utils"
@@ -61,11 +60,9 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	fields, err := utils.UpdateNonZeroFields(req)
 	// 创建用户实例更新
 	ins := NewUpdateUser(req)
-	fmt.Println(fields)
 	if err != nil {
 		return err
 	}
-
 	result := i.db.WithContext(ctx).Model(ins).Updates(fields)
 	if err = result.Error; err != nil {
 		return err
