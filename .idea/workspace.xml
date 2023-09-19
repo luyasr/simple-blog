@@ -4,11 +4,23 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8663d12-7cf2-4510-b7f8-bc51872bf698" name="Changes" comment="" />
+    <list default="true" id="d8663d12-7cf2-4510-b7f8-bc51872bf698" name="Changes" comment="增加validator">
+      <change beforePath="$PROJECT_DIR$/pkg/e/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/e/errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/user/impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/user/impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/user/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/user/interface.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/validate/validate.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/validate/validate.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
   </component>
   <component name="GOROOT" url="file://$PROJECT_DIR$/../../../usr/local/go" />
   <component name="Git.Settings">
@@ -30,12 +42,16 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2VXAr7g9Jr02zUqCht9W4zNgjrT" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
@@ -46,15 +62,77 @@
     "git-widget-placeholder": "master",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "C:/Users/huangzc",
-    "settings.editor.selected.configurable": "go.sdk"
+    "last_opened_file_path": "D:/dev/go/simple-blog",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "settings.editor.selected.configurable": "http.proxy"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="\\wsl$\Ubuntu\root\go\simple-blog\pkg\user" />
+      <recent name="\\wsl$\Ubuntu\root\go\simple-blog\pkg\user\api" />
+      <recent name="\\wsl$\Ubuntu\root\go\simple-blog\pkg\user\impl" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build main.go">
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="simple-blog" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="github.com/luyasr/simple-blog" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestUserServiceImpl_DescribeUser in github.com/luyasr/simple-blog/pkg/user/impl" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="simple-blog" />
+      <working_directory value="$PROJECT_DIR$/pkg/user/impl" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/luyasr/simple-blog/pkg/user/impl" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestUserServiceImpl_DescribeUser\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestUserServiceImpl_UpdateUser in github.com/luyasr/simple-blog/pkg/user/impl" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="simple-blog" />
+      <working_directory value="$PROJECT_DIR$/pkg/user/impl" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/luyasr/simple-blog/pkg/user/impl" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestUserServiceImpl_UpdateUser\E$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go" />
+        <item itemvalue="Go Test.TestUserServiceImpl_DescribeUser in github.com/luyasr/simple-blog/pkg/user/impl" />
+        <item itemvalue="Go Test.TestUserServiceImpl_UpdateUser in github.com/luyasr/simple-blog/pkg/user/impl" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="用户模块增删改查实现" />
+    <MESSAGE value="用户模块增删改查" />
+    <MESSAGE value="增加validator" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加validator" />
+  </component>
   <component name="VgoProject">
+    <environment>
+      <map>
+        <entry key="GOPROXY" value="https://goproxy.cn,direct" />
+      </map>
+    </environment>
     <settings-migrated>true</settings-migrated>
   </component>
 </project>
