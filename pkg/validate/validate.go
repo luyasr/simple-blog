@@ -10,7 +10,7 @@ import (
 	"reflect"
 )
 
-func ValidateStruct(obj any) error {
+func Struct(obj any) error {
 	validate := validator.New()
 	// 英文翻译器
 	en := en.New()

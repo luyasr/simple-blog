@@ -27,7 +27,7 @@ func NewUserServiceImpl() *UserServiceImpl {
 
 func (i *UserServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
 	// 先进行字段参数验证
-	if err := validate.ValidateStruct(req); err != nil {
+	if err := validate.Struct(req); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +54,7 @@ func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest
 
 func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) error {
 	// 校验UpdateUserRequest字段
-	if err := validate.ValidateStruct(req); err != nil {
+	if err := validate.Struct(req); err != nil {
 		return err
 	}
 	// 更新多列 获取非零字段
