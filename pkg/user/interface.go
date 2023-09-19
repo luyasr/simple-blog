@@ -2,9 +2,7 @@ package user
 
 import (
 	"context"
-	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Service 接口定义
@@ -28,11 +26,6 @@ func NewCreateUserRequest() *CreateUserRequest {
 	}
 }
 
-func (req *CreateUserRequest) PasswordHash() {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	req.Password = string(bytes)
-}
-
 // DeleteUserRequest 删除用户的请求
 type DeleteUserRequest struct {
 	Id int64 `json:"id"`
@@ -44,16 +37,15 @@ func NewDeleteUserRequest(id string) *DeleteUserRequest {
 	}
 }
 
-type UpdateUserRequest = User
+type UpdateUserRequest struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username" validate:"omitempty,min=3,max=20" label:"用户名"`
+	Password string `json:"password" validate:"omitempty,min=6,max=20" label:"密码"`
+	Role     Role   `json:"role"`
+}
 
-func NewUpdateUser(req *User) *User {
-	req.PasswordHash()
-	return &User{
-		&common.Meta{
-			ID: req.ID,
-		},
-		&CreateUserRequest{},
-	}
+func NewUpdateUser() *UpdateUserRequest {
+	return &UpdateUserRequest{}
 }
 
 // DescribeUserRequest 查看用户的请求

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/logger"
+	"github.com/luyasr/simple-blog/pkg/utils"
 )
 
 type User struct {
@@ -32,7 +33,7 @@ func NewDefaultUser() *User {
 }
 
 func NewUser(req *CreateUserRequest) *User {
-	req.PasswordHash()
+	req.Password = utils.PasswordHash(req.Password)
 
 	return &User{
 		Meta:              &common.Meta{},

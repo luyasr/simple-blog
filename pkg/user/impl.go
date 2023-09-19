@@ -56,13 +56,44 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	if err := validate.Struct(req); err != nil {
 		return err
 	}
-	// 更新多列 获取非零字段
-	fields, err := utils.UpdateNonZeroFields(req)
 	// 创建用户实例更新
-	ins := NewUpdateUser(req)
+	ins := NewDefaultUser()
+	// 查询用户
+	if err := i.db.WithContext(ctx).Where("id = ?", req.ID).First(ins).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return e.NewUserNotExists("用户ID %d 不存在", req.ID)
+		}
+		return err
+	}
+
+	// 用户信息
+	userMap, err := utils.StructToMap(ins)
 	if err != nil {
 		return err
 	}
+
+	// PasswordHash 如果用户密码相等, 密码置空, 不更新, 否则hash
+	if err := utils.PasswordCompare(ins.Password, req.Password); err == nil {
+		req.Password = ""
+	} else {
+		req.Password = utils.PasswordHash(req.Password)
+	}
+	// 更新多列 获取非零字段
+	fields, err := utils.UpdateNonZeroFields(req)
+	if err != nil {
+		return err
+	}
+
+	// 用户更新请求字段和现有值相同不更新
+	for field, _ := range fields {
+		if userMap[field] == fields[field] {
+			delete(fields, field)
+		}
+	}
+	if len(fields) == 0 {
+		return e.NewUpdateFailed("字段值未改变")
+	}
+
 	result := i.db.WithContext(ctx).Model(ins).Updates(fields)
 	if err = result.Error; err != nil {
 		return err

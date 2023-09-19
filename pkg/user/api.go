@@ -32,12 +32,12 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(req))
+	c.JSON(http.StatusOK, response.NewResponse(nil))
 }
 
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
-	req := NewDefaultUser()
+	req := NewUpdateUser()
 	req.ID = utils.StringToInt64(id)
 
 	err := c.BindJSON(req)

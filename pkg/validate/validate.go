@@ -29,8 +29,12 @@ func Struct(obj any) error {
 	_ = zhTrans.RegisterDefaultTranslations(validate, trans)
 	err := validate.Struct(obj)
 	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-			return errors.New(err.Translate(trans))
+		var invalidValidationError *validator.InvalidValidationError
+		if errors.As(err, &invalidValidationError) {
+			return errors.New(err.Error())
+		}
+		for _, e := range err.(validator.ValidationErrors) {
+			return errors.New(e.Translate(trans))
 		}
 	}
 	return nil
