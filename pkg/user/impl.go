@@ -65,33 +65,10 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 		}
 		return err
 	}
-
-	// 用户信息
-	userMap, err := utils.StructToMap(ins)
+	// 需要更新的字段 更新多列
+	fields, err := newUpdateFields(ins, req)
 	if err != nil {
 		return err
-	}
-
-	// PasswordHash 如果用户密码相等, 密码置空, 不更新, 否则hash
-	if err := utils.PasswordCompare(ins.Password, req.Password); err == nil {
-		req.Password = ""
-	} else {
-		req.Password = utils.PasswordHash(req.Password)
-	}
-	// 更新多列 获取非零字段
-	fields, err := utils.UpdateNonZeroFields(req)
-	if err != nil {
-		return err
-	}
-
-	// 用户更新请求字段和现有值相同不更新
-	for field, _ := range fields {
-		if userMap[field] == fields[field] {
-			delete(fields, field)
-		}
-	}
-	if len(fields) == 0 {
-		return e.NewUpdateFailed("字段值未改变")
 	}
 
 	result := i.db.WithContext(ctx).Model(ins).Updates(fields)
@@ -100,7 +77,7 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户ID %d 更新失败", ins.ID)
+		return e.NewUpdateFailed("用户ID %d 更新失败, 受影响的行记录 %d", ins.ID, affected)
 	}
 
 	return nil
@@ -125,4 +102,37 @@ func (i *UserServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserReq
 	}
 
 	return ins, nil
+}
+
+func newUpdateFields(u *User, req *UpdateUserRequest) (map[string]any, error) {
+	// User struct to map
+	um, err := utils.StructToMap(u)
+	if err != nil {
+		return nil, err
+	}
+
+	// PasswordHash 如果用户密码相同, 密码置空, 否则hash
+	if err := utils.PasswordCompare(u.Password, req.Password); err == nil {
+		req.Password = ""
+	} else {
+		req.Password = utils.PasswordHash(req.Password)
+	}
+
+	// 更新多列 获取非零字段
+	fields, err := utils.UpdateNonZeroFields(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// 用户更新请求字段和当前记录字段一致不更新
+	for field, _ := range fields {
+		if um[field] == fields[field] {
+			delete(fields, field)
+		}
+	}
+	if len(fields) == 0 {
+		return nil, e.NewUpdateFailed("当前记录未发生改变")
+	}
+
+	return fields, nil
 }
