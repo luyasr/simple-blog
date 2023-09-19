@@ -18,7 +18,7 @@ func CreateUser(c *gin.Context) {
 	}
 	createUser, err := userSvc.CreateUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, nil))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))
 		return
 	}
 	c.JSON(200, response.NewResponse(createUser))

@@ -26,8 +26,8 @@ func (u *User) String() string {
 
 func NewDefaultUser() *User {
 	return &User{
-		&common.Meta{},
-		&CreateUserRequest{},
+		Meta:              &common.Meta{},
+		CreateUserRequest: &CreateUserRequest{},
 	}
 }
 
@@ -35,7 +35,7 @@ func NewUser(req *CreateUserRequest) *User {
 	req.PasswordHash()
 
 	return &User{
-		Meta:              common.NewMeta(),
+		Meta:              &common.Meta{},
 		CreateUserRequest: req,
 	}
 }

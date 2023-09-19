@@ -17,9 +17,9 @@ type Service interface {
 
 // CreateUserRequest 创建用户的请求
 type CreateUserRequest struct {
-	Username string `json:"username" binding:"required" msg:"用户名校验失败"`
-	Password string `json:"password" binding:"required" msg:"密码校验失败"`
-	Role     Role   `json:"role" binding:"required" msg:"用户角色校验失败"`
+	Username string `json:"username" validate:"required,min=3,max=20" label:"用户名"`
+	Password string `json:"password" validate:"required,min=6,max=20" label:"密码"`
+	Role     Role   `json:"role"`
 }
 
 func NewCreateUserRequest() *CreateUserRequest {

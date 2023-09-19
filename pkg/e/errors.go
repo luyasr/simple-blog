@@ -3,16 +3,10 @@ package e
 import (
 	"errors"
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"reflect"
 )
 
 const (
 	defaultErrorCode = iota + 1
-)
-
-const (
-	defaultErrorMessage = "failed"
 )
 
 type Error struct {
@@ -28,9 +22,9 @@ func New(code int, format string, a ...any) *Error {
 }
 
 func NewCode(err error) int {
-	var e *Error
-	if errors.As(err, &e) {
-		return e.Code
+	var eError *Error
+	if errors.As(err, &eError) {
+		return eError.Code
 	}
 	return defaultErrorCode
 }
@@ -38,19 +32,10 @@ func NewCode(err error) int {
 func NewMessage(err error, obj any) string {
 	var eError *Error
 	if errors.As(err, &eError) {
-		return err.Error()
+		return eError.Error()
 	}
 
-	typeOf := reflect.TypeOf(obj)
-	if vErrors, ok := err.(validator.ValidationErrors); ok {
-		for _, e := range vErrors {
-			if s, ok := typeOf.Elem().FieldByName(e.Field()); ok {
-				msg := s.Tag.Get("msg")
-				return fmt.Sprintf("%s %s", msg, e.Error())
-			}
-		}
-	}
-	return defaultErrorMessage
+	return err.Error()
 }
 
 func (e *Error) Error() string {

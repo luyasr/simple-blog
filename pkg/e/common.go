@@ -17,5 +17,5 @@ func NewUpdateFailed(format string, a ...any) *Error {
 }
 
 func NewAuthFailed(format string, a ...any) *Error {
-	return New(20001, format, a...)
+	return New(401, format, a...)
 }
