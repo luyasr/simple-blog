@@ -7,58 +7,66 @@ import (
 	"net/http"
 )
 
-var userSvc = NewUserServiceImpl()
+type Handler struct {
+	service Service
+}
 
-func CreateUser(c *gin.Context) {
+func NewHandler() *Handler {
+	return &Handler{
+		service: NewServiceImpl(),
+	}
+}
+
+func (h *Handler) CreateUser(c *gin.Context) {
 	req := NewCreateUserRequest()
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	createUser, err := userSvc.CreateUser(c.Request.Context(), req)
+	createUser, err := h.service.CreateUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
 	c.JSON(200, response.NewResponse(createUser))
 }
 
-func DeleteUser(c *gin.Context) {
+func (h *Handler) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	req := NewDeleteUserRequest(id)
-	err := userSvc.DeleteUser(c.Request.Context(), req)
+	err := h.service.DeleteUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, nil))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
 	c.JSON(http.StatusOK, response.NewResponse(nil))
 }
 
-func UpdateUser(c *gin.Context) {
+func (h *Handler) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	req := NewUpdateUser()
 	req.ID = utils.StringToInt64(id)
 
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	err = userSvc.UpdateUser(c.Request.Context(), req)
+	err = h.service.UpdateUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, req))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
 	c.JSON(http.StatusOK, response.NewResponse(nil))
 }
 
-func DescribeUser(c *gin.Context) {
+func (h *Handler) DescribeUser(c *gin.Context) {
 	username := c.Param("username")
 	req := NewDescribeUserRequestByUsername(username)
-	describeUser, err := userSvc.DescribeUser(c.Request.Context(), req)
+	describeUser, err := h.service.DescribeUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err, nil))
+		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
 	c.JSON(http.StatusOK, response.NewResponse(describeUser))

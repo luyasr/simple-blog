@@ -14,6 +14,10 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+func (e *Error) Error() string {
+	return e.Message
+}
+
 func New(code int, format string, a ...any) *Error {
 	return &Error{
 		Code:    code,
@@ -29,15 +33,11 @@ func NewCode(err error) int {
 	return defaultErrorCode
 }
 
-func NewMessage(err error, obj any) string {
+func NewMessage(err error) string {
 	var eError *Error
 	if errors.As(err, &eError) {
 		return eError.Error()
 	}
 
 	return err.Error()
-}
-
-func (e *Error) Error() string {
-	return e.Message
 }

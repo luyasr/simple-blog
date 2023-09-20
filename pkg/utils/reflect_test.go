@@ -1,8 +1,7 @@
-package utils_test
+package utils
 
 import (
 	"github.com/luyasr/simple-blog/pkg/user"
-	"github.com/luyasr/simple-blog/pkg/utils"
 	"testing"
 )
 
@@ -12,7 +11,7 @@ func TestUpdateNonZeroFields(t *testing.T) {
 		Password: "12345",
 		Role:     user.RoleMember,
 	})
-	fields, err := utils.UpdateNonZeroFields(u)
+	fields, err := UpdateNonZeroFields(u)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -11,47 +11,47 @@ import (
 )
 
 var (
-	_ Service = (*UserServiceImpl)(nil)
+	_ Service = (*ServiceImpl)(nil)
 )
 
-type UserServiceImpl struct {
+type ServiceImpl struct {
 	db *gorm.DB
 }
 
-func NewUserServiceImpl() *UserServiceImpl {
-	return &UserServiceImpl{
+func NewServiceImpl() *ServiceImpl {
+	return &ServiceImpl{
 		db: config.C.Mysql.GetConn(),
 	}
 }
 
-func (i *UserServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
+func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
 	// 先进行字段参数验证
 	if err := validate.Struct(req); err != nil {
 		return nil, err
 	}
 
 	ins := NewUser(req)
-	err := i.db.WithContext(ctx).First(&ins, "username = ?", ins.Username).Error
+	err := s.db.WithContext(ctx).First(&ins, "username = ?", ins.Username).Error
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, e.NewUserExists("用户 %s 已存在", ins.Username)
+		return nil, e.NewFound("用户%s已存在", ins.Username)
 	}
 
-	if err := i.db.WithContext(ctx).Create(ins).Error; err != nil {
+	if err := s.db.WithContext(ctx).Create(ins).Error; err != nil {
 		return nil, err
 	}
 	return ins, nil
 }
 
-func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) error {
+func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) error {
 	ins := NewDefaultUser()
 	ins.ID = req.Id
-	if affected := i.db.WithContext(ctx).Delete(ins).RowsAffected; affected == 0 {
-		return e.NewUserNotExists("用户ID %d 不存在", ins.ID)
+	if affected := s.db.WithContext(ctx).Delete(ins).RowsAffected; affected == 0 {
+		return e.NewNotFound("用户ID%d没找到", ins.ID)
 	}
 	return nil
 }
 
-func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) error {
+func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) error {
 	// 校验UpdateUserRequest字段
 	if err := validate.Struct(req); err != nil {
 		return err
@@ -59,9 +59,9 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	// 创建用户实例更新
 	ins := NewDefaultUser()
 	// 查询用户
-	if err := i.db.WithContext(ctx).Where("id = ?", req.ID).First(ins).Error; err != nil {
+	if err := s.db.WithContext(ctx).Where("id = ?", req.ID).First(ins).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewUserNotExists("用户ID %d 不存在", req.ID)
+			return e.NewNotFound("用户ID%d没找到", req.ID)
 		}
 		return err
 	}
@@ -71,7 +71,7 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 		return err
 	}
 
-	result := i.db.WithContext(ctx).Model(ins).Updates(fields)
+	result := s.db.WithContext(ctx).Model(ins).Updates(fields)
 	if err = result.Error; err != nil {
 		return err
 	}
@@ -83,9 +83,9 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest
 	return nil
 }
 
-func (i *UserServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserRequest) (*User, error) {
+func (s *ServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserRequest) (*User, error) {
 	ins := NewDefaultUser()
-	query := i.db.WithContext(ctx)
+	query := s.db.WithContext(ctx)
 
 	switch req.DescribeBy {
 	case DescribeById:
@@ -96,7 +96,7 @@ func (i *UserServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserReq
 
 	if err := query.First(ins).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, e.NewUserNotExists("用户 %v 不存在", req.DescribeValue)
+			return nil, e.NewNotFound("用户%v没找到", req.DescribeValue)
 		}
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func newUpdateFields(u *User, req *UpdateUserRequest) (map[string]any, error) {
 	}
 
 	// 用户更新请求字段和当前记录字段一致不更新
-	for field, _ := range fields {
+	for field := range fields {
 		if um[field] == fields[field] {
 			delete(fields, field)
 		}

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/logger"
+	"github.com/luyasr/simple-blog/pkg/token"
 	"github.com/luyasr/simple-blog/pkg/user"
 	"log"
 	"net/http"
@@ -26,10 +27,17 @@ func Run() {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	api := r.Group("api/v1")
+
+	// 注册到主路由
+	userServiceImpl := user.NewServiceImpl()
+	u := user.NewHandler()
+
+	t := token.NewHandler(userServiceImpl)
 	api.Use()
 	{
 		InitRoute(api)
-		user.InitUserRoute(api)
+		u.InitUserRoute(api)
+		t.InitTokenRoute(api)
 	}
 
 	srv := &http.Server{

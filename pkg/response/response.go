@@ -16,10 +16,10 @@ func NewResponse(data any) *Response {
 	}
 }
 
-func NewResponseWithError(err error, obj any) *Response {
+func NewResponseWithError(err error) *Response {
 	return &Response{
 		Code:    e.NewCode(err),
 		Data:    nil,
-		Message: e.NewMessage(err, obj),
+		Message: e.NewMessage(err),
 	}
 }
