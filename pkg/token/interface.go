@@ -17,7 +17,7 @@ type LogoutRequest struct {
 }
 
 type ValidateToken struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"access_token" validate:"required"`
 }
 
 func NewLoginRequest() *LoginRequest {

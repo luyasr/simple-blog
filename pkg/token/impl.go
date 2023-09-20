@@ -62,5 +62,16 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
 }
 
 func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
+	var token Token
+	// 校验token请求
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+
+	// 查询token
+	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(token).Error; err != nil {
+		return e.NewAuthFailed("无效的token")
+	}
+
 	return nil
 }
