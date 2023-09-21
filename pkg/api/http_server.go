@@ -26,18 +26,29 @@ func Run() {
 	gin.SetMode(ginLogMode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-	api := r.Group("api/v1")
 
-	// 注册到主路由
 	userServiceImpl := user.NewServiceImpl()
 	u := user.NewHandler()
-
+	tokenServiceImpl := token.NewServiceImpl(userServiceImpl)
 	t := token.NewHandler(userServiceImpl)
+
+	// 主路由
+	api := r.Group("api/v1")
 	api.Use()
 	{
 		InitRoute(api)
-		u.InitUserRoute(api)
-		t.InitTokenRoute(api)
+	}
+	// 注册组到主路由
+	userGroup := api.Group("user")
+	userGroup.Use(AuthMiddleware(tokenServiceImpl))
+	{
+		u.InitUserRoute(userGroup)
+	}
+
+	tokenGroup := api.Group("token")
+	tokenGroup.Use()
+	{
+		t.InitTokenRoute(tokenGroup)
 	}
 
 	srv := &http.Server{
