@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/rs/xid"
+	"time"
 )
 
 type Token struct {
@@ -27,6 +28,22 @@ func (t *Token) String() string {
 		logger.L.Err(err).Send()
 	}
 	return string(j)
+}
+
+func (t *Token) Refresh() {
+	t.AccessToken = xid.New().String()
+}
+
+func (t *Token) AccessTokenExpiredTime() time.Time {
+	return time.Unix(t.UpdatedAt, 0).Add(time.Duration(t.AccessTokenExpiredAt) * time.Second)
+}
+
+func (t *Token) RefreshTokenExpiredTime() time.Time {
+	return time.Unix(t.CreatedAt, 0).Add(time.Duration(t.RefreshTokenExpiredAt) * time.Second)
+}
+
+func NewDefaultToken() *Token {
+	return &Token{}
 }
 
 func NewToken() *Token {

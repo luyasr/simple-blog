@@ -25,7 +25,7 @@ func NewServiceImpl() *ServiceImpl {
 }
 
 func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
-	// 先进行字段参数验证
+	// 校验CreateUserRequest字段
 	if err := validate.Struct(req); err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func newUpdateFields(u *User, req *UpdateUserRequest) (map[string]any, error) {
 		return nil, err
 	}
 
-	// 用户更新请求字段和当前记录字段一致不更新
+	// 更新请求字段和当前记录字段一致不更新
 	for field := range fields {
 		if um[field] == fields[field] {
 			delete(fields, field)

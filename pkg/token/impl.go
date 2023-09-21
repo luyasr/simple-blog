@@ -8,6 +8,7 @@ import (
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
 	"gorm.io/gorm"
+	"time"
 )
 
 var (
@@ -49,6 +50,11 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	token.UserID = u.ID
 	token.Username = u.Username
 
+	// 限制多地登录, 登录前删除现有token
+	if err = s.db.WithContext(ctx).Where("username = ?", token.Username).Delete(token).Error; err != nil {
+		return nil, err
+	}
+
 	// token入库
 	if err := s.db.WithContext(ctx).Create(token).Error; err != nil {
 		return nil, err
@@ -62,7 +68,7 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
 }
 
 func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
-	var token Token
+	token := NewDefaultToken()
 	// 校验token请求
 	if err := validate.Struct(req); err != nil {
 		return err
@@ -71,6 +77,21 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
 	// 查询token
 	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(token).Error; err != nil {
 		return e.NewAuthFailed("无效的token")
+	}
+
+	// 校验token是否过期
+	accessTokenExpiredTime := token.AccessTokenExpiredTime()
+	refreshTokenExpiredTime := token.RefreshTokenExpiredTime()
+	if time.Since(accessTokenExpiredTime) > 0 {
+		if time.Since(refreshTokenExpiredTime) < 0 {
+			token.Refresh()
+			// 刷新token, 重新入库
+			if err := s.db.WithContext(ctx).Model(token).Where("user_id = ?", token.UserID).Update("access_token", token.AccessToken).Error; err != nil {
+				return err
+			}
+		} else {
+			return e.NewAuthFailed("token过期,请重新登录")
+		}
 	}
 
 	return nil

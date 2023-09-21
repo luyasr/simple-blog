@@ -11,9 +11,9 @@ type Handler struct {
 	server Service
 }
 
-func NewHandler(userService *user.ServiceImpl) *Handler {
+func NewHandler(serviceImpl *user.ServiceImpl) *Handler {
 	return &Handler{
-		server: NewServiceImpl(userService),
+		server: NewServiceImpl(serviceImpl),
 	}
 }
 

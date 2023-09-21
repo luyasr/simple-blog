@@ -23,3 +23,9 @@ type ValidateToken struct {
 func NewLoginRequest() *LoginRequest {
 	return &LoginRequest{}
 }
+
+func NewValidateToken(token string) *ValidateToken {
+	return &ValidateToken{
+		AccessToken: token,
+	}
+}
