@@ -15,3 +15,7 @@ func NewFound(format string, a ...any) *Error {
 func NewUpdateFailed(format string, a ...any) *Error {
 	return New(10002, format, a...)
 }
+
+func NewDeleteFailed(format string, a ...any) *Error {
+	return New(10003, format, a...)
+}

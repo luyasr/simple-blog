@@ -9,7 +9,7 @@ import (
 
 func AuthMiddleware(serviceImpl *token.ServiceImpl) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		t := c.GetHeader("token")
+		t := c.GetHeader("access_token")
 		validateToken := token.NewValidateToken(t)
 		err := serviceImpl.Validate(c.Request.Context(), validateToken)
 		if err != nil {

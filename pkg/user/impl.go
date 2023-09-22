@@ -43,10 +43,20 @@ func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*
 }
 
 func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) error {
-	ins := NewDefaultUser()
-	ins.ID = req.Id
-	if affected := s.db.WithContext(ctx).Delete(ins).RowsAffected; affected == 0 {
-		return e.NewNotFound("用户ID%d没找到", ins.ID)
+	// 校验DeleteUserRequest请求
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+	// 删除前, 先查询是否存在
+	user, err := s.DescribeUser(ctx, NewDescribeUserRequestById(utils.Int64ToString(req.Id)))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return e.NewNotFound("用户ID%d没找到", user.ID)
+		}
+		return err
+	}
+	if err := s.db.WithContext(ctx).Delete(user).Error; err != nil {
+		return err
 	}
 	return nil
 }

@@ -40,9 +40,12 @@ func Run() {
 	}
 	// 注册组到主路由
 	userGroup := api.Group("user")
+	// 增加用户
+	u.CreateUserRoute(userGroup)
+	// 删改查 需要验证
 	userGroup.Use(AuthMiddleware(tokenServiceImpl))
 	{
-		u.InitUserRoute(userGroup)
+		u.UserRoute(userGroup)
 	}
 
 	tokenGroup := api.Group("token")

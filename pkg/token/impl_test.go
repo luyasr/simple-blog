@@ -18,3 +18,13 @@ func TestHandler_Login(t *testing.T) {
 	token, _ := tokenSvc.Login(ctx, req)
 	t.Log(token)
 }
+
+func TestHandler_Logout(t *testing.T) {
+	req := NewLogoutRequest()
+	req.AccessToken = "ck6n4g9qd2tum4iatjkg"
+	req.RefreshToken = "ck6n4g9qd2tum4iatjl0"
+	err := tokenSvc.Logout(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

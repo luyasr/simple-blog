@@ -2,6 +2,7 @@ package token
 
 import (
 	"context"
+	"errors"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/user"
@@ -64,6 +65,32 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 }
 
 func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
+	token := NewDefaultToken()
+	// 校验退出请求
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+
+	err := s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
+		req.AccessToken,
+		req.RefreshToken,
+	).First(token).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return e.NewNotFound("access_token %s没找到", req.AccessToken)
+		}
+		return err
+	}
+
+	// 删除token
+	err = s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
+		token.AccessToken,
+		token.RefreshToken,
+	).Delete(token).Error
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

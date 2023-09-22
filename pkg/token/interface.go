@@ -14,14 +14,20 @@ type LoginRequest struct {
 }
 
 type LogoutRequest struct {
+	AccessToken  string `json:"access_token" validate:"required"`
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 type ValidateToken struct {
-	AccessToken string `json:"access_token" validate:"required"`
+	AccessToken string `json:"access_token"`
 }
 
 func NewLoginRequest() *LoginRequest {
 	return &LoginRequest{}
+}
+
+func NewLogoutRequest() *LogoutRequest {
+	return &LogoutRequest{}
 }
 
 func NewValidateToken(token string) *ValidateToken {
