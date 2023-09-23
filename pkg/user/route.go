@@ -14,6 +14,6 @@ func (h *Handler) UserRoute(route *gin.RouterGroup) {
 	{
 		route.DELETE(":id", h.DeleteUser)
 		route.PUT(":id", h.UpdateUser)
-		route.GET(":username", h.DescribeUser)
+		route.GET(":id", h.DescribeUser)
 	}
 }

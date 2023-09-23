@@ -62,8 +62,8 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 }
 
 func (h *Handler) DescribeUser(c *gin.Context) {
-	username := c.Param("username")
-	req := NewDescribeUserRequestByUsername(username)
+	id := c.Param("id")
+	req := NewDescribeUserRequestById(id)
 	describeUser, err := h.service.DescribeUser(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))

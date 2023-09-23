@@ -51,17 +51,20 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	token.UserID = u.ID
 	token.Username = u.Username
 
-	// 限制多地登录, 登录前删除现有token
-	if err = s.db.WithContext(ctx).Where("username = ?", token.Username).Delete(token).Error; err != nil {
+	// 用户存在token登录更新, 不存在token登录创建
+	if err = s.db.WithContext(ctx).Where("user_id = ?", token.UserID).First(NewDefaultToken()).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			if err = s.db.WithContext(ctx).Create(token).Error; err != nil {
+				return nil, err
+			}
+		}
 		return nil, err
+	} else {
+		if err = s.db.WithContext(ctx).Model(token).Where("user_id", token.UserID).Updates(token).Error; err != nil {
+			return nil, err
+		}
 	}
-
-	// token入库
-	if err := s.db.WithContext(ctx).Create(token).Error; err != nil {
-		return nil, err
-	}
-
-	return token, nil
+	return token, err
 }
 
 func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {

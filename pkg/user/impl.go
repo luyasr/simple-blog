@@ -75,6 +75,14 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 		}
 		return err
 	}
+
+	// PasswordHash 如果用户密码相同, 密码置空, 否则hash
+	if err := utils.PasswordCompare(ins.Password, req.Password); err == nil {
+		req.Password = ""
+	} else {
+		req.Password = utils.PasswordHash(req.Password)
+	}
+
 	// 需要更新的字段 更新多列
 	fields, err := newUpdateFields(ins, req)
 	if err != nil {
@@ -114,29 +122,22 @@ func (s *ServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserRequest
 	return ins, nil
 }
 
-func newUpdateFields(u *User, req *UpdateUserRequest) (map[string]any, error) {
-	// User struct to map
-	um, err := utils.StructToMap(u)
+func newUpdateFields(obj any, updateObj any) (map[string]any, error) {
+	// 结构体转map
+	m, err := utils.StructToMap(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	// PasswordHash 如果用户密码相同, 密码置空, 否则hash
-	if err := utils.PasswordCompare(u.Password, req.Password); err == nil {
-		req.Password = ""
-	} else {
-		req.Password = utils.PasswordHash(req.Password)
-	}
-
 	// 更新多列 获取非零字段
-	fields, err := utils.UpdateNonZeroFields(req)
+	fields, err := utils.UpdateNonZeroFields(updateObj)
 	if err != nil {
 		return nil, err
 	}
 
 	// 更新请求字段和当前记录字段一致不更新
 	for field := range fields {
-		if um[field] == fields[field] {
+		if m[field] == fields[field] {
 			delete(fields, field)
 		}
 	}
