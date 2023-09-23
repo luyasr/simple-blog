@@ -105,7 +105,7 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
 	}
 
 	// 查询token
-	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(token).Error; err != nil {
+	if err := s.db.WithContext(ctx).Where("user_id = ? AND access_token = ?", req.UserID, req.AccessToken).First(token).Error; err != nil {
 		return e.NewAuthFailed("无效的token")
 	}
 

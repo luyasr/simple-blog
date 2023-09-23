@@ -51,7 +51,7 @@ func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) er
 	user, err := s.DescribeUser(ctx, NewDescribeUserRequestById(utils.Int64ToString(req.Id)))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewNotFound("用户ID%d没找到", user.ID)
+			return e.NewNotFound("用户%d没找到", user.ID)
 		}
 		return err
 	}
@@ -71,7 +71,7 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	// 查询用户
 	if err := s.db.WithContext(ctx).Where("id = ?", req.ID).First(ins).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewNotFound("用户ID%d没找到", req.ID)
+			return e.NewNotFound("用户%d没找到", req.ID)
 		}
 		return err
 	}
@@ -95,7 +95,7 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户ID %d 更新失败, 受影响的行记录 %d", ins.ID, affected)
+		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", ins.ID, affected)
 	}
 
 	return nil

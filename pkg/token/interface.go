@@ -19,6 +19,7 @@ type LogoutRequest struct {
 }
 
 type ValidateToken struct {
+	UserID      int64  `json:"user_id"`
 	AccessToken string `json:"access_token"`
 }
 
@@ -30,8 +31,9 @@ func NewLogoutRequest() *LogoutRequest {
 	return &LogoutRequest{}
 }
 
-func NewValidateToken(token string) *ValidateToken {
+func NewValidateToken(userId int64, token string) *ValidateToken {
 	return &ValidateToken{
+		UserID:      userId,
 		AccessToken: token,
 	}
 }
