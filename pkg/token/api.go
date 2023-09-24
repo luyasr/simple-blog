@@ -2,18 +2,34 @@ package token
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
-	"github.com/luyasr/simple-blog/pkg/user"
 	"net/http"
 )
 
-type Handler struct {
-	server Service
+func init() {
+	ioc.ApiHandler().Registry(&Handler{})
 }
 
-func NewHandler(serviceImpl *user.ServiceImpl) *Handler {
-	return &Handler{
-		server: NewServiceImpl(serviceImpl),
+func (h *Handler) Init() error {
+	h.service = ioc.Controller().Get(Name).(Service)
+	return nil
+}
+
+func (h *Handler) Name() string {
+	return Name
+}
+
+type Handler struct {
+	service Service
+}
+
+func (h *Handler) Registry(r gin.IRouter) {
+	group := r.Group("token")
+	group.Use()
+	{
+		group.POST("", h.Login)
+		group.DELETE("", h.Logout)
 	}
 }
 
@@ -24,7 +40,7 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	token, err := h.server.Login(c.Request.Context(), req)
+	token, err := h.service.Login(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
@@ -39,7 +55,7 @@ func (h *Handler) Logout(c *gin.Context) {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	err = h.server.Logout(c.Request.Context(), req)
+	err = h.service.Logout(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return

@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/config"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/logger"
-	"github.com/luyasr/simple-blog/pkg/token"
-	"github.com/luyasr/simple-blog/pkg/user"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +17,18 @@ import (
 
 func Run() {
 	var ginLogMode string
+
+	// 初始化Controller
+	if err := ioc.Controller().Init(); err != nil {
+		panic(err)
+	}
+
+	// 初始化ApiHandler
+	if err := ioc.ApiHandler().Init(); err != nil {
+		panic(err)
+	}
+
+	// 启动Gin, 注册路由
 	if config.C.Server.Debug {
 		ginLogMode = gin.DebugMode
 	} else {
@@ -26,33 +37,8 @@ func Run() {
 	gin.SetMode(ginLogMode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-
-	userServiceImpl := user.NewServiceImpl()
-	u := user.NewHandler()
-	tokenServiceImpl := token.NewServiceImpl(userServiceImpl)
-	t := token.NewHandler(userServiceImpl)
-
-	// 主路由
 	api := r.Group("api/v1")
-	api.Use()
-	{
-		InitRoute(api)
-	}
-	// 注册组到主路由
-	userGroup := api.Group("user")
-	// 增加用户
-	u.CreateUserRoute(userGroup)
-	// 删改查 需要验证
-	userGroup.Use(AuthMiddleware(tokenServiceImpl))
-	{
-		u.UserRoute(userGroup)
-	}
-
-	tokenGroup := api.Group("token")
-	tokenGroup.Use()
-	{
-		t.InitTokenRoute(tokenGroup)
-	}
+	ioc.ApiHandler().RouteRegistry(api)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.C.Server.Port),

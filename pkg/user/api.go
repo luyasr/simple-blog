@@ -2,18 +2,37 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"net/http"
 )
 
+func init() {
+	ioc.ApiHandler().Registry(&Handler{})
+}
+
+func (h *Handler) Init() error {
+	h.service = ioc.Controller().Get(Name).(Service)
+	return nil
+}
+
+func (h *Handler) Name() string {
+	return Name
+}
+
 type Handler struct {
 	service Service
 }
 
-func NewHandler() *Handler {
-	return &Handler{
-		service: NewServiceImpl(),
+func (h *Handler) Registry(r gin.IRouter) {
+	group := r.Group("user")
+	group.Use()
+	{
+		group.POST("", h.CreateUser)
+		group.DELETE(":id", h.DeleteUser)
+		group.PUT(":id", h.UpdateUser)
+		group.GET(":id", h.DescribeUser)
 	}
 }
 

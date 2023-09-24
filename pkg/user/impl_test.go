@@ -2,17 +2,19 @@ package user
 
 import (
 	"context"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"testing"
 )
 
 var (
-	userSvc *ServiceImpl
+	userSvc Service
 	ctx     = context.Background()
 )
 
 func init() {
-	userSvc = NewServiceImpl()
+	_ = ioc.Controller().Init()
+	userSvc = ioc.Controller().Get(Name).(Service)
 }
 
 func TestUserServiceImpl_CreateUser(t *testing.T) {
@@ -27,7 +29,7 @@ func TestUserServiceImpl_CreateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DeleteUser(t *testing.T) {
-	err := userSvc.DeleteUser(ctx, &DeleteUserRequest{Id: 7})
+	err := userSvc.DeleteUser(ctx, &DeleteUserRequest{ID: 7})
 	if err != nil {
 		t.Fatal(err)
 	}

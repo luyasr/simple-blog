@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/user"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
@@ -16,16 +17,23 @@ var (
 	_ Service = (*ServiceImpl)(nil)
 )
 
-type ServiceImpl struct {
-	db   *gorm.DB
-	user *user.ServiceImpl
+func init() {
+	ioc.Controller().Registry(&ServiceImpl{})
 }
 
-func NewServiceImpl(userService *user.ServiceImpl) *ServiceImpl {
-	return &ServiceImpl{
-		db:   config.C.Mysql.GetConn(),
-		user: userService,
-	}
+func (s *ServiceImpl) Init() error {
+	s.db = config.C.Mysql.GetConn()
+	s.user = ioc.Controller().Get(user.Name).(user.Service)
+	return nil
+}
+
+func (s *ServiceImpl) Name() string {
+	return Name
+}
+
+type ServiceImpl struct {
+	db   *gorm.DB
+	user user.Service
 }
 
 func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, error) {

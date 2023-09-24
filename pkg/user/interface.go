@@ -5,6 +5,8 @@ import (
 	"github.com/luyasr/simple-blog/pkg/utils"
 )
 
+const Name = "user"
+
 // Service 接口定义
 type Service interface {
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
@@ -28,12 +30,12 @@ func NewCreateUserRequest() *CreateUserRequest {
 
 // DeleteUserRequest 删除用户的请求
 type DeleteUserRequest struct {
-	Id int64 `json:"id"`
+	ID int64 `json:"id"`
 }
 
 func NewDeleteUserRequest(id string) *DeleteUserRequest {
 	return &DeleteUserRequest{
-		Id: utils.StringToInt64(id),
+		ID: utils.StringToInt64(id),
 	}
 }
 

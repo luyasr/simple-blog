@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
+	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
 	"gorm.io/gorm"
@@ -14,14 +15,22 @@ var (
 	_ Service = (*ServiceImpl)(nil)
 )
 
-type ServiceImpl struct {
-	db *gorm.DB
+// init ioc controller容器注册
+func init() {
+	ioc.Controller().Registry(&ServiceImpl{})
 }
 
-func NewServiceImpl() *ServiceImpl {
-	return &ServiceImpl{
-		db: config.C.Mysql.GetConn(),
-	}
+func (s *ServiceImpl) Init() error {
+	s.db = config.C.Mysql.GetConn()
+	return nil
+}
+
+func (s *ServiceImpl) Name() string {
+	return Name
+}
+
+type ServiceImpl struct {
+	db *gorm.DB
 }
 
 func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
@@ -48,7 +57,7 @@ func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) er
 		return err
 	}
 	// 删除前, 先查询是否存在
-	user, err := s.DescribeUser(ctx, NewDescribeUserRequestById(utils.Int64ToString(req.Id)))
+	user, err := s.DescribeUser(ctx, NewDescribeUserRequestById(utils.Int64ToString(req.ID)))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return e.NewNotFound("用户%d没找到", user.ID)
