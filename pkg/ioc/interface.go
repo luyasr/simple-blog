@@ -7,6 +7,6 @@ type Ioc interface {
 	Name() string
 }
 
-type GinRouterGroup interface {
+type GinIRouter interface {
 	Registry(r gin.IRouter)
 }

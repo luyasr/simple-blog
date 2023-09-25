@@ -37,8 +37,8 @@ func Run() {
 	gin.SetMode(ginLogMode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-	api := r.Group("api/v1")
-	ioc.ApiHandler().RouteRegistry(api)
+	apiV1 := r.Group("api/v1")
+	ioc.ApiHandler().RouteRegistry(apiV1)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.C.Server.Port),
