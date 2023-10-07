@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	defaultErrorCode = iota + 1
+	defaultErrorCode = 1
 )
 
 type Error struct {
@@ -25,7 +25,7 @@ func New(code int, format string, a ...any) *Error {
 	}
 }
 
-func NewCode(err error) int {
+func GetCode(err error) int {
 	var eError *Error
 	if errors.As(err, &eError) {
 		return eError.Code
@@ -33,7 +33,7 @@ func NewCode(err error) int {
 	return defaultErrorCode
 }
 
-func NewMessage(err error) string {
+func GetMessage(err error) string {
 	var eError *Error
 	if errors.As(err, &eError) {
 		return eError.Error()

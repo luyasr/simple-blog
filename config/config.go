@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
-	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -25,6 +24,11 @@ type Config struct {
 type Server struct {
 	Port  int  `json:"port"`
 	Debug bool `json:"debug"`
+	Log   Log  `json:"log"`
+}
+
+type Log struct {
+	Dir string `json:"dir"`
 }
 
 type Mysql struct {
@@ -65,7 +69,6 @@ func newConfig() {
 	}
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		logger.L.Info().Msg(fmt.Sprintf("Config file changed: %s", e.Name))
 		if err := viper.Unmarshal(C); err != nil {
 			panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
 		}

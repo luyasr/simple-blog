@@ -23,8 +23,8 @@ func Run() {
 		panic(err)
 	}
 
-	// 初始化ApiHandler
-	if err := ioc.ApiHandler().Init(); err != nil {
+	// 初始化Handler
+	if err := ioc.Handler().Init(); err != nil {
 		panic(err)
 	}
 
@@ -38,7 +38,7 @@ func Run() {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	apiV1 := r.Group("api/v1")
-	ioc.ApiHandler().RouteRegistry(apiV1)
+	ioc.Handler().RouteRegistry(apiV1)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.C.Server.Port),

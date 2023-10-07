@@ -2,9 +2,9 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/luyasr/simple-blog/app/token"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
-	"github.com/luyasr/simple-blog/pkg/token"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"net/http"
 )

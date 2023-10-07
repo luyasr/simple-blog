@@ -8,6 +8,7 @@ import (
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
+	"github.com/rs/zerolog"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +31,8 @@ func (s *ServiceImpl) Name() string {
 }
 
 type ServiceImpl struct {
-	db *gorm.DB
+	db  *gorm.DB
+	log zerolog.Logger
 }
 
 func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
@@ -57,10 +59,10 @@ func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) er
 		return err
 	}
 	// 删除前, 先查询是否存在
-	user, err := s.DescribeUser(ctx, NewDescribeUserRequestById(utils.Int64ToString(req.ID)))
+	user, err := s.QueryUser(ctx, NewQueryUserRequestById(utils.Int64ToString(req.ID)))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewNotFound("用户%d没找到", user.ID)
+			return e.NewNotFound("用户%d没找到", user.Id)
 		}
 		return err
 	}
@@ -104,26 +106,26 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", ins.ID, affected)
+		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", ins.Id, affected)
 	}
 
 	return nil
 }
 
-func (s *ServiceImpl) DescribeUser(ctx context.Context, req *DescribeUserRequest) (*User, error) {
+func (s *ServiceImpl) QueryUser(ctx context.Context, req *QueryUserRequest) (*User, error) {
 	ins := NewDefaultUser()
 	query := s.db.WithContext(ctx)
 
-	switch req.DescribeBy {
-	case DescribeById:
-		query = query.Where("id = ?", req.DescribeValue)
-	case DescribeByUsername:
-		query = query.Where("username = ?", req.DescribeValue)
+	switch req.QueryBy {
+	case QueryById:
+		query = query.Where("id = ?", req.QueryValue)
+	case QueryByUsername:
+		query = query.Where("username = ?", req.QueryValue)
 	}
 
 	if err := query.First(ins).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, e.NewNotFound("用户%v没找到", req.DescribeValue)
+			return nil, e.NewNotFound("用户%v没找到", req.QueryValue)
 		}
 		return nil, err
 	}

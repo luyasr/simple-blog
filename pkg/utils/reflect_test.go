@@ -1,15 +1,15 @@
 package utils
 
 import (
-	"github.com/luyasr/simple-blog/pkg/user"
+	user2 "github.com/luyasr/simple-blog/app/user"
 	"testing"
 )
 
 func TestUpdateNonZeroFields(t *testing.T) {
-	u := user.NewUser(&user.CreateUserRequest{
+	u := user2.NewUser(&user2.CreateUserRequest{
 		Username: "admin",
 		Password: "12345",
-		Role:     user.RoleMember,
+		Role:     user2.RoleMember,
 	})
 	fields, err := UpdateNonZeroFields(u)
 	if err != nil {

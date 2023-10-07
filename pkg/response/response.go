@@ -18,8 +18,8 @@ func NewResponse(data any) *Response {
 
 func NewResponseWithError(err error) *Response {
 	return &Response{
-		Code:    e.NewCode(err),
+		Code:    e.GetCode(err),
 		Data:    nil,
-		Message: e.NewMessage(err),
+		Message: e.GetMessage(err),
 	}
 }

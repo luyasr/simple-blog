@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/luyasr/simple-blog/pkg/api"
+	"github.com/luyasr/simple-blog/app/api"
 	"os"
 
 	"github.com/spf13/cobra"

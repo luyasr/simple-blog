@@ -8,10 +8,10 @@ const (
 	RoleAdmin
 )
 
-// DescribeBy 用户查询条件
-type DescribeBy int
+// QueryBy 用户查询条件
+type QueryBy int
 
 const (
-	DescribeById = iota + 1
-	DescribeByUsername
+	QueryById = iota + 1
+	QueryByUsername
 )

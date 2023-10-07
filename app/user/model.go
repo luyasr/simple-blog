@@ -17,12 +17,11 @@ func (u *User) TableName() string {
 }
 
 func (u *User) String() string {
-	j, err := json.Marshal(u)
+	bytes, err := json.Marshal(u)
 	if err != nil {
-		logger.L.Err(err)
+		logger.Console.Error().Err(err).Stack().Send()
 	}
-
-	return string(j)
+	return string(bytes)
 }
 
 func NewDefaultUser() *User {

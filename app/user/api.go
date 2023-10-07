@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	ioc.ApiHandler().Registry(&Handler{})
+	ioc.Handler().Registry(&Handler{})
 }
 
 func (h *Handler) Init() error {
@@ -32,7 +32,7 @@ func (h *Handler) Registry(r gin.IRouter) {
 		group.POST("", h.CreateUser)
 		group.DELETE(":id", h.DeleteUser)
 		group.PUT(":id", h.UpdateUser)
-		group.GET(":id", h.DescribeUser)
+		group.GET(":id", h.QueryUser)
 	}
 }
 
@@ -80,10 +80,10 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewResponse(nil))
 }
 
-func (h *Handler) DescribeUser(c *gin.Context) {
+func (h *Handler) QueryUser(c *gin.Context) {
 	id := c.Param("id")
-	req := NewDescribeUserRequestById(id)
-	describeUser, err := h.service.DescribeUser(c.Request.Context(), req)
+	req := NewQueryUserRequestById(id)
+	describeUser, err := h.service.QueryUser(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return

@@ -45,8 +45,8 @@ func TestUserServiceImpl_UpdateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DescribeUser(t *testing.T) {
-	req := NewDescribeUserRequestByUsername("admin")
-	ins, err := userSvc.DescribeUser(ctx, req)
+	req := NewQueryUserRequestByUsername("admin")
+	ins, err := userSvc.QueryUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}

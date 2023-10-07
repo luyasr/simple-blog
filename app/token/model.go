@@ -23,11 +23,11 @@ func (t *Token) TableName() string {
 }
 
 func (t *Token) String() string {
-	j, err := json.Marshal(t)
+	bytes, err := json.Marshal(t)
 	if err != nil {
-		logger.L.Err(err).Send()
+		logger.Console.Error().Err(err).Stack().Send()
 	}
-	return string(j)
+	return string(bytes)
 }
 
 func (t *Token) Refresh() {

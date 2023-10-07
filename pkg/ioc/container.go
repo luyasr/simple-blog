@@ -4,7 +4,7 @@ var (
 	controllerContainer = &Container{
 		store: map[string]Ioc{},
 	}
-	apiHandlerContainer = &Container{
+	handlerContainer = &Container{
 		store: map[string]Ioc{},
 	}
 )
@@ -13,6 +13,6 @@ func Controller() *Container {
 	return controllerContainer
 }
 
-func ApiHandler() *Container {
-	return apiHandlerContainer
+func Handler() *Container {
+	return handlerContainer
 }

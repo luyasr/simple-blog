@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	ioc.ApiHandler().Registry(&Handler{})
+	ioc.Handler().Registry(&Handler{})
 }
 
 func (h *Handler) Init() error {

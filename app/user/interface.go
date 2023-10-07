@@ -12,7 +12,7 @@ type Service interface {
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	DeleteUser(context.Context, *DeleteUserRequest) error
 	UpdateUser(context.Context, *UpdateUserRequest) error
-	DescribeUser(context.Context, *DescribeUserRequest) (*User, error)
+	QueryUser(context.Context, *QueryUserRequest) (*User, error)
 }
 
 // CreateUserRequest 创建用户的请求
@@ -50,22 +50,22 @@ func NewUpdateUser() *UpdateUserRequest {
 	return &UpdateUserRequest{}
 }
 
-// DescribeUserRequest 查看用户的请求
-type DescribeUserRequest struct {
-	DescribeBy    DescribeBy `json:"describe_by"`
-	DescribeValue string     `json:"describe_value"`
+// QueryUserRequest 查看用户的请求
+type QueryUserRequest struct {
+	QueryBy    QueryBy `json:"query_by"`
+	QueryValue string  `json:"query_value"`
 }
 
-func NewDescribeUserRequestById(id string) *DescribeUserRequest {
-	return &DescribeUserRequest{
-		DescribeBy:    DescribeById,
-		DescribeValue: id,
+func NewQueryUserRequestById(id string) *QueryUserRequest {
+	return &QueryUserRequest{
+		QueryBy:    QueryById,
+		QueryValue: id,
 	}
 }
 
-func NewDescribeUserRequestByUsername(username string) *DescribeUserRequest {
-	return &DescribeUserRequest{
-		DescribeBy:    DescribeByUsername,
-		DescribeValue: username,
+func NewQueryUserRequestByUsername(username string) *QueryUserRequest {
+	return &QueryUserRequest{
+		QueryBy:    QueryByUsername,
+		QueryValue: username,
 	}
 }

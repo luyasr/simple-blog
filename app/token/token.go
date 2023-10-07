@@ -3,12 +3,13 @@ package token
 import (
 	"context"
 	"errors"
+	"github.com/luyasr/simple-blog/app/user"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
-	"github.com/luyasr/simple-blog/pkg/user"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
+	"github.com/rs/zerolog"
 	"gorm.io/gorm"
 	"time"
 )
@@ -34,6 +35,7 @@ func (s *ServiceImpl) Name() string {
 type ServiceImpl struct {
 	db   *gorm.DB
 	user user.Service
+	log  zerolog.Logger
 }
 
 func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, error) {
@@ -43,8 +45,8 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	}
 
 	// 查询用户信息
-	byUsername := user.NewDescribeUserRequestByUsername(req.Username)
-	u, err := s.user.DescribeUser(ctx, byUsername)
+	byUsername := user.NewQueryUserRequestByUsername(req.Username)
+	u, err := s.user.QueryUser(ctx, byUsername)
 	if err != nil {
 		return nil, e.NewAuthFailed("用户名或密码错误")
 	}
@@ -56,7 +58,7 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 
 	// 颁发token
 	token := NewToken()
-	token.UserID = u.ID
+	token.UserID = u.Id
 	token.Username = u.Username
 
 	// 用户存在token登录更新, 不存在token登录创建
@@ -113,7 +115,7 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
 	}
 
 	// 查询token
-	if err := s.db.WithContext(ctx).Where("user_id = ? AND access_token = ?", req.UserID, req.AccessToken).First(token).Error; err != nil {
+	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(token).Error; err != nil {
 		return e.NewAuthFailed("无效的token")
 	}
 
