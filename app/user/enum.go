@@ -4,7 +4,8 @@ package user
 type Role int
 
 const (
-	RoleMember Role = iota + 1
+	RoleUnKnown Role = iota
+	RoleMember
 	RoleAdmin
 )
 
@@ -12,6 +13,7 @@ const (
 type QueryBy int
 
 const (
-	QueryById = iota + 1
+	QueryUnKnown QueryBy = iota
+	QueryById
 	QueryByUsername
 )

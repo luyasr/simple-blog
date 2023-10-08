@@ -15,7 +15,7 @@ func reflectObj(obj any) (reflect.Type, reflect.Value) {
 	return typeOf, valueOf
 }
 
-func subUpdateNonZeroFields(fields map[string]any, typeOf reflect.Type, valueOf reflect.Value) error {
+func withNotEmptyValue(fields map[string]any, typeOf reflect.Type, valueOf reflect.Value) error {
 	for i := 0; i < typeOf.NumField(); i++ {
 		tFiled := typeOf.Field(i)
 		vFiled := valueOf.Field(i)
@@ -36,7 +36,7 @@ func subUpdateNonZeroFields(fields map[string]any, typeOf reflect.Type, valueOf 
 				fields[field] = vFiled.Uint()
 			}
 		case reflect.Ptr:
-			err := subUpdateNonZeroFields(fields, tFiled.Type.Elem(), vFiled.Elem())
+			err := withNotEmptyValue(fields, tFiled.Type.Elem(), vFiled.Elem())
 			if err != nil {
 				return err
 			}
@@ -46,17 +46,17 @@ func subUpdateNonZeroFields(fields map[string]any, typeOf reflect.Type, valueOf 
 	return nil
 }
 
-func UpdateNonZeroFields(obj any) (map[string]any, error) {
+func WithNotEmptyValue(obj any) (map[string]any, error) {
 	fields := make(map[string]any)
 	typeOf, valueOf := reflectObj(obj)
-	err := subUpdateNonZeroFields(fields, typeOf, valueOf)
+	err := withNotEmptyValue(fields, typeOf, valueOf)
 	if err != nil {
 		return nil, err
 	}
 	return fields, nil
 }
 
-func subStructToMap(result map[string]any, typeOf reflect.Type, valueOf reflect.Value) error {
+func struct2Map(result map[string]any, typeOf reflect.Type, valueOf reflect.Value) error {
 	for i := 0; i < typeOf.NumField(); i++ {
 		tFiled := typeOf.Field(i)
 		vFiled := valueOf.Field(i)
@@ -71,7 +71,7 @@ func subStructToMap(result map[string]any, typeOf reflect.Type, valueOf reflect.
 			field, _ := tFiled.Tag.Lookup("json")
 			result[field] = vFiled.Uint()
 		case reflect.Ptr:
-			err := subStructToMap(result, tFiled.Type.Elem(), vFiled.Elem())
+			err := struct2Map(result, tFiled.Type.Elem(), vFiled.Elem())
 			if err != nil {
 				return err
 			}
@@ -80,10 +80,10 @@ func subStructToMap(result map[string]any, typeOf reflect.Type, valueOf reflect.
 	return nil
 }
 
-func StructToMap(obj any) (map[string]any, error) {
+func Struct2Map(obj any) (map[string]any, error) {
 	result := make(map[string]any)
 	typeOf, valueOf := reflectObj(obj)
-	err := subStructToMap(result, typeOf, valueOf)
+	err := struct2Map(result, typeOf, valueOf)
 	if err != nil {
 		return nil, err
 	}

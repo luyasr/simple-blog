@@ -95,7 +95,7 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	}
 
 	// 需要更新的字段 更新多列
-	fields, err := newUpdateFields(ins, req)
+	fields, err := utils.Merge(ins, req)
 	if err != nil {
 		return err
 	}
@@ -131,30 +131,4 @@ func (s *ServiceImpl) QueryUser(ctx context.Context, req *QueryUserRequest) (*Us
 	}
 
 	return ins, nil
-}
-
-func newUpdateFields(obj any, updateObj any) (map[string]any, error) {
-	// 结构体转map
-	m, err := utils.StructToMap(obj)
-	if err != nil {
-		return nil, err
-	}
-
-	// 更新多列 获取非零字段
-	fields, err := utils.UpdateNonZeroFields(updateObj)
-	if err != nil {
-		return nil, err
-	}
-
-	// 更新请求字段和当前记录字段一致不更新
-	for field := range fields {
-		if m[field] == fields[field] {
-			delete(fields, field)
-		}
-	}
-	if len(fields) == 0 {
-		return nil, e.NewUpdateFailed("当前记录未发生改变")
-	}
-
-	return fields, nil
 }

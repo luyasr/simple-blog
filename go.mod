@@ -3,6 +3,7 @@ module github.com/luyasr/simple-blog
 go 1.20
 
 require (
+	dario.cat/mergo v1.0.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/locales v0.14.1

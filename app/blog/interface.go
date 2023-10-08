@@ -33,7 +33,7 @@ func NewCreateBlogRequest() *CreateBlogRequest {
 }
 
 type DeleteBlogRequest struct {
-	Id string `json:"id" validate:"required"`
+	Id int64 `json:"id" validate:"required"`
 }
 
 func NewDeleteBlogRequest() *DeleteBlogRequest {
@@ -54,18 +54,24 @@ func NewUpdateBlogRequest() *UpdateBlogRequest {
 }
 
 type QueryBlogRequest struct {
-	Username   string  `json:"username" validate:"omitempty" label:"用户名"`
-	Status     *Status `json:"status" validate:"omitempty" label:"状态"`
-	PageSize   int     `json:"page_size" validate:"omitempty" label:"分页大小"`
-	PageNumber int     `json:"page_number" validate:"omitempty" label:"分页数量"`
+	Status     Status `json:"status" validate:"omitempty" label:"状态"`
+	PageSize   int    `json:"page_size" validate:"omitempty" label:"分页大小"`
+	PageNumber int    `json:"page_number" validate:"omitempty" label:"分页页数"`
+}
+
+func (r *QueryBlogRequest) Offset() int {
+	return r.PageSize * (r.PageNumber - 1)
 }
 
 func NewQueryBlogRequest() *QueryBlogRequest {
-	return &QueryBlogRequest{}
+	return &QueryBlogRequest{
+		PageSize:   10,
+		PageNumber: 1,
+	}
 }
 
 type Blogs struct {
-	Total int     `json:"total"`
+	Total int64   `json:"total"`
 	Items []*Blog `json:"items"`
 }
 
@@ -79,4 +85,8 @@ func (b *Blogs) String() string {
 
 func (b *Blogs) Add(items ...*Blog) {
 	b.Items = append(b.Items, items...)
+}
+
+func NewBlogs() *Blogs {
+	return &Blogs{}
 }
