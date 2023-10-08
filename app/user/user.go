@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"dario.cat/mergo"
 	"errors"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/e"
@@ -94,14 +95,15 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 		req.Password = utils.PasswordHash(req.Password)
 	}
 
-	// 需要更新的字段 更新多列
-	fields, err := utils.Merge(ins, req)
+	// 合并结构体
+	src, _ := utils.Struct2Map(req)
+	err := mergo.Map(ins.CreateUserRequest, src, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
 
-	result := s.db.WithContext(ctx).Model(ins).Updates(fields)
-	if err = result.Error; err != nil {
+	result := s.db.WithContext(ctx).Model(ins).Updates(ins)
+	if err := result.Error; err != nil {
 		return err
 	}
 	affected := result.RowsAffected

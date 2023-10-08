@@ -54,9 +54,9 @@ func NewUpdateBlogRequest() *UpdateBlogRequest {
 }
 
 type QueryBlogRequest struct {
-	Status     Status `json:"status" validate:"omitempty" label:"状态"`
-	PageSize   int    `json:"page_size" validate:"omitempty" label:"分页大小"`
-	PageNumber int    `json:"page_number" validate:"omitempty" label:"分页页数"`
+	Status     *Status `json:"status" validate:"omitempty" label:"状态"`
+	PageSize   int     `json:"page_size" validate:"omitempty" label:"分页大小"`
+	PageNumber int     `json:"page_number" validate:"omitempty" label:"分页页数"`
 }
 
 func (r *QueryBlogRequest) Offset() int {

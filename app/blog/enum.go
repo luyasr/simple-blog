@@ -3,7 +3,6 @@ package blog
 type Status int
 
 const (
-	StatusUnKnown Status = iota
-	StatusDraft
+	StatusDraft Status = iota
 	StatusPublished
 )

@@ -67,7 +67,7 @@ func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Bl
 	blogs := NewBlogs()
 	query := s.db.WithContext(ctx).Model(&Blog{})
 	// 根据请求参数组装查询条件
-	if req.Status != StatusUnKnown {
+	if req.Status != nil {
 		query = query.Where("status = ?", req.Status)
 	}
 
