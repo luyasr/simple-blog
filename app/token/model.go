@@ -42,10 +42,6 @@ func (t *Token) RefreshTokenExpiredTime() time.Time {
 	return time.Unix(t.CreatedAt, 0).Add(time.Duration(t.RefreshTokenExpiredAt) * time.Second)
 }
 
-func NewDefaultToken() *Token {
-	return &Token{}
-}
-
 func NewToken() *Token {
 	return &Token{
 		AccessToken:           xid.New().String(),

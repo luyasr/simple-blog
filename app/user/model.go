@@ -27,12 +27,6 @@ func (u *User) String() string {
 	return string(bytes)
 }
 
-func NewDefaultUser() *User {
-	return &User{
-		CreateUserRequest: &CreateUserRequest{},
-	}
-}
-
 func NewUser(req *CreateUserRequest) *User {
 	req.Password = utils.PasswordHash(req.Password)
 

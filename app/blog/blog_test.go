@@ -50,3 +50,23 @@ func TestServiceImpl_QueryBlog(t *testing.T) {
 	fmt.Println(blogs)
 	t.Log(blogs)
 }
+
+func TestServiceImpl_QueryBlogById(t *testing.T) {
+	req := NewQueryBlogByIdRequest(6)
+	blogById, err := svc.QueryBlogById(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(blogById)
+}
+
+func TestServiceImpl_UpdateBlog(t *testing.T) {
+	req := NewUpdateBlogRequest()
+	req.BlogId = 6
+	req.Title = "test golang"
+
+	err := svc.UpdateBlog(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

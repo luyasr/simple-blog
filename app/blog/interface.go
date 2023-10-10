@@ -15,6 +15,7 @@ type Service interface {
 	DeleteBlog(context.Context, *DeleteBlogRequest) error
 	UpdateBlog(context.Context, *UpdateBlogRequest) error
 	QueryBlog(context.Context, *QueryBlogRequest) (*Blogs, error)
+	QueryBlogById(context.Context, *QueryBlogByIdRequest) (*Blog, error)
 }
 
 type CreateBlogRequest struct {
@@ -41,6 +42,7 @@ func NewDeleteBlogRequest() *DeleteBlogRequest {
 }
 
 type UpdateBlogRequest struct {
+	BlogId   int64             `json:"blogId" validate:"required" label:"博客id"`
 	Title    string            `json:"title" validate:"omitempty" label:"标题"`
 	Author   string            `json:"author" validate:"omitempty" label:"作者"`
 	CreateBy string            `json:"create_by" validate:"omitempty" label:"用户"`
@@ -67,6 +69,16 @@ func NewQueryBlogRequest() *QueryBlogRequest {
 	return &QueryBlogRequest{
 		PageSize:   10,
 		PageNumber: 1,
+	}
+}
+
+type QueryBlogByIdRequest struct {
+	Id int64 `json:"id" validate:"required"`
+}
+
+func NewQueryBlogByIdRequest(id int64) *QueryBlogByIdRequest {
+	return &QueryBlogByIdRequest{
+		Id: id,
 	}
 }
 

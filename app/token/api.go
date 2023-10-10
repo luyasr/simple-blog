@@ -40,12 +40,16 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	token, err := h.service.Login(c.Request.Context(), req)
+	ins, err := h.service.Login(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(token))
+
+	// 通过SetCookie直接写入到浏览器客户端
+	c.SetCookie(tokenCookieName, ins.AccessToken, 0, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, response.NewResponse(ins))
 }
 
 func (h *Handler) Logout(c *gin.Context) {

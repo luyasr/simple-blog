@@ -16,13 +16,13 @@ type LoginRequest struct {
 }
 
 type LogoutRequest struct {
-	AccessToken  string `json:"access_token" validate:"required"`
-	RefreshToken string `json:"refresh_token" validate:"required"`
+	AccessToken  string `json:"access_token" validate:"required" label:"登录token"`
+	RefreshToken string `json:"refresh_token" validate:"required" label:"刷新token"`
 }
 
 type ValidateToken struct {
-	UserID      int64  `json:"user_id"`
-	AccessToken string `json:"access_token"`
+	UserId      int64  `json:"user_id" validate:"required" label:"用户id"`
+	AccessToken string `json:"access_token" validate:"required" label:"登录token"`
 }
 
 func NewLoginRequest() *LoginRequest {
@@ -35,7 +35,7 @@ func NewLogoutRequest() *LogoutRequest {
 
 func NewValidateToken(userId int64, token string) *ValidateToken {
 	return &ValidateToken{
-		UserID:      userId,
+		UserId:      userId,
 		AccessToken: token,
 	}
 }

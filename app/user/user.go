@@ -79,9 +79,9 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 		return err
 	}
 	// 创建用户实例更新
-	ins := NewDefaultUser()
+	var user User
 	// 查询用户
-	if err := s.db.WithContext(ctx).Where("id = ?", req.ID).First(ins).Error; err != nil {
+	if err := s.db.WithContext(ctx).Where("id = ?", req.ID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return e.NewNotFound("用户%d没找到", req.ID)
 		}
@@ -89,33 +89,33 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	}
 
 	// PasswordHash 如果用户密码相同, 密码置空, 否则hash
-	if err := utils.PasswordCompare(ins.Password, req.Password); err == nil {
+	if err := utils.PasswordCompare(user.Password, req.Password); err == nil {
 		req.Password = ""
 	} else {
 		req.Password = utils.PasswordHash(req.Password)
 	}
 
 	// 合并结构体
-	src, _ := utils.Struct2Map(req)
-	err := mergo.Map(ins.CreateUserRequest, src, mergo.WithOverride)
+	src, _ := utils.StructToMap(req)
+	err := mergo.Map(user.CreateUserRequest, src, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
 
-	result := s.db.WithContext(ctx).Model(ins).Updates(ins)
+	result := s.db.WithContext(ctx).Model(&user).Updates(&user)
 	if err := result.Error; err != nil {
 		return err
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", ins.Id, affected)
+		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", user.Id, affected)
 	}
 
 	return nil
 }
 
 func (s *ServiceImpl) QueryUser(ctx context.Context, req *QueryUserRequest) (*User, error) {
-	ins := NewDefaultUser()
+	var user *User
 	query := s.db.WithContext(ctx)
 
 	switch req.QueryBy {
@@ -125,12 +125,12 @@ func (s *ServiceImpl) QueryUser(ctx context.Context, req *QueryUserRequest) (*Us
 		query = query.Where("username = ?", req.QueryValue)
 	}
 
-	if err := query.First(ins).Error; err != nil {
+	if err := query.First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, e.NewNotFound("用户%v没找到", req.QueryValue)
 		}
 		return nil, err
 	}
 
-	return ins, nil
+	return user, nil
 }

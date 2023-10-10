@@ -62,7 +62,7 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	token.Username = u.Username
 
 	// 用户存在token登录更新, 不存在token登录创建
-	if err = s.db.WithContext(ctx).Where("user_id = ?", token.UserID).First(NewDefaultToken()).Error; err != nil {
+	if err = s.db.WithContext(ctx).Where("user_id = ?", token.UserID).First(&Token{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if err = s.db.WithContext(ctx).Create(token).Error; err != nil {
 				return nil, err
@@ -78,16 +78,16 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 }
 
 func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
-	token := NewDefaultToken()
 	// 校验退出请求
 	if err := validate.Struct(req); err != nil {
 		return err
 	}
 
+	var token *Token
 	err := s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
 		req.AccessToken,
 		req.RefreshToken,
-	).First(token).Error
+	).First(&token).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return e.NewNotFound("access_token %s没找到", req.AccessToken)
@@ -99,7 +99,7 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
 	err = s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
 		token.AccessToken,
 		token.RefreshToken,
-	).Delete(token).Error
+	).Delete(&token).Error
 	if err != nil {
 		return err
 	}
@@ -108,14 +108,14 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
 }
 
 func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
-	token := NewDefaultToken()
 	// 校验token请求
 	if err := validate.Struct(req); err != nil {
 		return err
 	}
 
+	var token *Token
 	// 查询token
-	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(token).Error; err != nil {
+	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(&token).Error; err != nil {
 		return e.NewAuthFailed("无效的token")
 	}
 
@@ -124,9 +124,12 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
 	refreshTokenExpiredTime := token.RefreshTokenExpiredTime()
 	if time.Since(accessTokenExpiredTime) > 0 {
 		if time.Since(refreshTokenExpiredTime) < 0 {
+			// 后端刷新token
 			token.Refresh()
-			// 刷新token, 重新入库
-			if err := s.db.WithContext(ctx).Model(token).Where("user_id = ?", token.UserID).Update("access_token", token.AccessToken).Error; err != nil {
+
+			// token更新
+			err := s.db.WithContext(ctx).Model(token).Update("access_token", token.AccessToken).Error
+			if err != nil {
 				return err
 			}
 		} else {

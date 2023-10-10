@@ -2,8 +2,12 @@ package blog
 
 import (
 	"context"
+	"dario.cat/mergo"
+	"errors"
 	"github.com/luyasr/simple-blog/config"
+	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
+	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
@@ -48,15 +52,39 @@ func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) er
 		return err
 	}
 
-	var blog Blog
-	blog.Id = req.Id
-	err := s.db.WithContext(ctx).Delete(blog).Error
+	// 删除前先查询是否存在文章
+	queryBlogByIdRequest := NewQueryBlogByIdRequest(req.Id)
+	blogById, err := s.QueryBlogById(ctx, queryBlogByIdRequest)
+	if err != nil {
+		return err
+	}
+
+	err = s.db.WithContext(ctx).Delete(blogById).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) error {
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+
+	blogById, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.BlogId))
+	if err != nil {
+		return err
+	}
+
+	src, _ := utils.StructToMap(req)
+	err = mergo.Map(blogById.CreateBlogRequest, src, mergo.WithOverride)
+	if err != nil {
+		return err
+	}
+	err = s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.BlogId).Updates(blogById).Error
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Blogs, error) {
@@ -84,4 +112,20 @@ func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Bl
 	}
 
 	return blogs, nil
+}
+
+func (s *ServiceImpl) QueryBlogById(ctx context.Context, req *QueryBlogByIdRequest) (*Blog, error) {
+	if err := validate.Struct(req); err != nil {
+		return nil, err
+	}
+
+	var blog *Blog
+	err := s.db.WithContext(ctx).Where("id = ?", req.Id).First(&blog).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, e.NewNotFound("文章id%d没找到", req.Id)
+		}
+		return nil, err
+	}
+	return blog, nil
 }
