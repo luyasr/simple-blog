@@ -47,7 +47,7 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	// 通过SetCookie直接写入到浏览器客户端
-	c.SetCookie(tokenCookieName, ins.AccessToken, 0, "/", "localhost", false, true)
+	c.SetCookie(CookieName, ins.AccessToken, 0, "/", c.GetHeader("domain"), false, true)
 
 	c.JSON(http.StatusOK, response.NewResponse(ins))
 }

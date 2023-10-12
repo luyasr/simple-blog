@@ -107,16 +107,16 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutRequest) error {
 	return nil
 }
 
-func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
+func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) (*Token, error) {
 	// 校验token请求
 	if err := validate.Struct(req); err != nil {
-		return err
+		return nil, err
 	}
 
 	var token *Token
 	// 查询token
 	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(&token).Error; err != nil {
-		return e.NewAuthFailed("无效的token")
+		return nil, e.NewAuthFailed("无效的token")
 	}
 
 	// 校验token是否过期
@@ -128,14 +128,16 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) error {
 			token.Refresh()
 
 			// token更新
-			err := s.db.WithContext(ctx).Model(token).Update("access_token", token.AccessToken).Error
+			err := s.db.WithContext(ctx).Model(token).
+				Where("user_id = ?", token.UserID).
+				Update("access_token", token.AccessToken).Error
 			if err != nil {
-				return err
+				return nil, err
 			}
 		} else {
-			return e.NewAuthFailed("token过期,请重新登录")
+			return nil, e.NewAuthFailed("token过期,请重新登录")
 		}
 	}
 
-	return nil
+	return token, nil
 }

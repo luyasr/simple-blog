@@ -2,6 +2,7 @@ package blog
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/luyasr/simple-blog/app/middlewares"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
 	"github.com/luyasr/simple-blog/pkg/utils"
@@ -29,10 +30,12 @@ func (h *Handler) Registry(r gin.IRouter) {
 	group := r.Group("blog")
 	group.Use()
 	{
+		group.GET("", h.QueryBlog)
+		group.Use(middlewares.NewAuth().Auth)
 		group.POST("", h.CreateBlog)
 		group.DELETE(":id", h.DeleteBlog)
 		group.PUT(":id", h.UpdateBlog)
-		group.GET("", h.QueryBlog)
+
 	}
 }
 

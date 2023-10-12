@@ -47,6 +47,7 @@ func (s *ServiceImpl) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*
 	}
 	return ins, nil
 }
+
 func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) error {
 	if err := validate.Struct(req); err != nil {
 		return err
@@ -65,6 +66,7 @@ func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) er
 	}
 	return nil
 }
+
 func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) error {
 	if err := validate.Struct(req); err != nil {
 		return err
@@ -87,6 +89,7 @@ func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) er
 
 	return nil
 }
+
 func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Blogs, error) {
 	if err := validate.Struct(req); err != nil {
 		return nil, err

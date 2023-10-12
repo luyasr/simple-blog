@@ -7,7 +7,7 @@ const Name = "token"
 type Service interface {
 	Login(context.Context, *LoginRequest) (*Token, error)
 	Logout(context.Context, *LogoutRequest) error
-	Validate(context.Context, *ValidateToken) error
+	Validate(context.Context, *ValidateToken) (*Token, error)
 }
 
 type LoginRequest struct {
@@ -21,7 +21,6 @@ type LogoutRequest struct {
 }
 
 type ValidateToken struct {
-	UserId      int64  `json:"user_id" validate:"required" label:"用户id"`
 	AccessToken string `json:"access_token" validate:"required" label:"登录token"`
 }
 
@@ -33,9 +32,8 @@ func NewLogoutRequest() *LogoutRequest {
 	return &LogoutRequest{}
 }
 
-func NewValidateToken(userId int64, token string) *ValidateToken {
+func NewValidateToken(token string) *ValidateToken {
 	return &ValidateToken{
-		UserId:      userId,
 		AccessToken: token,
 	}
 }
