@@ -53,7 +53,7 @@ func (h *Handler) Login(c *gin.Context) {
 }
 
 func (h *Handler) Logout(c *gin.Context) {
-	req := NewLogoutRequest()
+	req := NewLogoutOrRefreshRequest()
 	err := c.BindJSON(req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))

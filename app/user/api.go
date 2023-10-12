@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
-	"github.com/luyasr/simple-blog/pkg/utils"
 	"net/http"
 )
 
@@ -63,9 +62,8 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {
-	id := c.Param("id")
 	req := NewUpdateUser()
-	req.ID = utils.StringToInt64(id)
+	req.Id = c.Param("id")
 
 	err := c.BindJSON(req)
 	if err != nil {
@@ -81,8 +79,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 }
 
 func (h *Handler) QueryUser(c *gin.Context) {
-	id := c.Param("id")
-	req := NewQueryUserRequestById(id)
+	req := NewQueryUserRequestById(c.Param("id"))
 	describeUser, err := h.service.QueryUser(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewResponseWithError(err))

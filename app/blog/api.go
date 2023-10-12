@@ -85,11 +85,14 @@ func (h *Handler) UpdateBlog(c *gin.Context) {
 
 func (h *Handler) QueryBlog(c *gin.Context) {
 	req := NewQueryBlogRequest()
-	err := c.BindJSON(req)
-	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
-		return
+	switch c.Query("status") {
+	case "draft":
+		req.SetStatus(StatusDraft)
+	case "published":
+		req.SetStatus(StatusPublished)
 	}
+	req.ParsePageSize(c.Query("page_size"))
+	req.ParsePageNumber(c.Query("page_number"))
 
 	blogs, err := h.service.QueryBlog(c.Request.Context(), req)
 	if err != nil {

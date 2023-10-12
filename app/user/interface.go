@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"github.com/luyasr/simple-blog/pkg/utils"
 )
 
 const Name = "user"
@@ -30,17 +29,17 @@ func NewCreateUserRequest() *CreateUserRequest {
 
 // DeleteUserRequest 删除用户的请求
 type DeleteUserRequest struct {
-	ID int64 `json:"id"`
+	Id string `json:"id"`
 }
 
 func NewDeleteUserRequest(id string) *DeleteUserRequest {
 	return &DeleteUserRequest{
-		ID: utils.StringToInt64(id),
+		Id: id,
 	}
 }
 
 type UpdateUserRequest struct {
-	ID       int64  `json:"id"`
+	Id       string `json:"id"`
 	Username string `json:"username" validate:"omitempty,min=3,max=20" label:"用户名"`
 	Password string `json:"password" validate:"omitempty,min=6,max=20" label:"密码"`
 	Role     Role   `json:"role"`

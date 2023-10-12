@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/luyasr/simple-blog/pkg/logger"
+	"github.com/luyasr/simple-blog/pkg/utils"
 )
 
 const (
@@ -63,6 +64,22 @@ type QueryBlogRequest struct {
 
 func (r *QueryBlogRequest) Offset() int {
 	return r.PageSize * (r.PageNumber - 1)
+}
+
+func (r *QueryBlogRequest) SetStatus(s Status) {
+	r.Status = &s
+}
+
+func (r *QueryBlogRequest) ParsePageSize(pageSize string) {
+	if i := utils.StringToInt(pageSize); i != 0 {
+		r.PageSize = i
+	}
+}
+
+func (r *QueryBlogRequest) ParsePageNumber(pageNumber string) {
+	if i := utils.StringToInt(pageNumber); i != 0 {
+		r.PageNumber = i
+	}
 }
 
 func NewQueryBlogRequest() *QueryBlogRequest {

@@ -8,7 +8,7 @@ import (
 )
 
 type Token struct {
-	UserID                int64  `json:"user_id" validate:"required"`
+	UserId                int64  `json:"user_id" validate:"required"`
 	Username              string `json:"username" validate:"required"`
 	AccessToken           string `json:"access_token" validate:"required"`
 	AccessTokenExpiredAt  int    `json:"access_token_expired_at" validate:"required"`

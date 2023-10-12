@@ -5,7 +5,6 @@ import (
 	"dario.cat/mergo"
 	"errors"
 	"github.com/luyasr/simple-blog/config"
-	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
@@ -126,7 +125,7 @@ func (s *ServiceImpl) QueryBlogById(ctx context.Context, req *QueryBlogByIdReque
 	err := s.db.WithContext(ctx).Where("id = ?", req.Id).First(&blog).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, e.NewNotFound("文章id%d没找到", req.Id)
+			return nil, NotFound
 		}
 		return nil, err
 	}

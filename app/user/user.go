@@ -5,7 +5,6 @@ import (
 	"dario.cat/mergo"
 	"errors"
 	"github.com/luyasr/simple-blog/config"
-	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
@@ -42,16 +41,16 @@ func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*
 		return nil, err
 	}
 
-	ins := NewUser(req)
-	err := s.db.WithContext(ctx).First(&ins, "username = ?", ins.Username).Error
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, e.NewFound("用户%s已存在", ins.Username)
+	user := NewUser(req)
+	queryUser, _ := s.QueryUser(ctx, NewQueryUserRequestByUsername(user.Username))
+	if queryUser != nil {
+		return nil, AlreadyExist
 	}
 
-	if err := s.db.WithContext(ctx).Create(ins).Error; err != nil {
+	if err := s.db.WithContext(ctx).Create(user).Error; err != nil {
 		return nil, err
 	}
-	return ins, nil
+	return user, nil
 }
 
 func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) error {
@@ -59,14 +58,13 @@ func (s *ServiceImpl) DeleteUser(ctx context.Context, req *DeleteUserRequest) er
 	if err := validate.Struct(req); err != nil {
 		return err
 	}
+
 	// 删除前, 先查询是否存在
-	user, err := s.QueryUser(ctx, NewQueryUserRequestById(utils.Int64ToString(req.ID)))
+	user, err := s.QueryUser(ctx, NewQueryUserRequestById(req.Id))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewNotFound("用户%d没找到", user.Id)
-		}
 		return err
 	}
+
 	if err := s.db.WithContext(ctx).Delete(user).Error; err != nil {
 		return err
 	}
@@ -78,13 +76,9 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	if err := validate.Struct(req); err != nil {
 		return err
 	}
-	// 创建用户实例更新
-	var user User
 	// 查询用户
-	if err := s.db.WithContext(ctx).Where("id = ?", req.ID).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.NewNotFound("用户%d没找到", req.ID)
-		}
+	user, err := s.QueryUser(ctx, NewQueryUserRequestById(req.Id))
+	if err != nil {
 		return err
 	}
 
@@ -97,18 +91,18 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 
 	// 合并结构体
 	src, _ := utils.StructToMap(req)
-	err := mergo.Map(user.CreateUserRequest, src, mergo.WithOverride)
+	err = mergo.Map(user.CreateUserRequest, src, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
 
-	result := s.db.WithContext(ctx).Model(&user).Updates(&user)
+	result := s.db.WithContext(ctx).Model(user).Updates(&user)
 	if err := result.Error; err != nil {
 		return err
 	}
 	affected := result.RowsAffected
 	if affected == 0 {
-		return e.NewUpdateFailed("用户%d更新失败, 受影响的行记录 %d", user.Id, affected)
+		return UpdateFailed
 	}
 
 	return nil
@@ -127,7 +121,7 @@ func (s *ServiceImpl) QueryUser(ctx context.Context, req *QueryUserRequest) (*Us
 
 	if err := query.First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, e.NewNotFound("用户%v没找到", req.QueryValue)
+			return nil, NotFound
 		}
 		return nil, err
 	}

@@ -8,7 +8,7 @@ func NewNotFound(format string, a ...any) *Error {
 	return New(404, format, a...)
 }
 
-func NewFound(format string, a ...any) *Error {
+func NewAlreadyExist(format string, a ...any) *Error {
 	return New(10001, format, a...)
 }
 
