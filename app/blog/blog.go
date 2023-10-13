@@ -53,8 +53,7 @@ func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) er
 	}
 
 	// 删除前先查询是否存在文章
-	queryBlogByIdRequest := NewQueryBlogByIdRequest(req.Id)
-	blogById, err := s.QueryBlogById(ctx, queryBlogByIdRequest)
+	blogById, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.Id))
 	if err != nil {
 		return err
 	}
@@ -82,6 +81,24 @@ func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) er
 		return err
 	}
 	err = s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.BlogId).Updates(blogById).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *ServiceImpl) UpdateBlogStatus(ctx context.Context, req *UpdateBlogStatusRequest) error {
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+
+	blog, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.BlogId))
+	if err != nil {
+		return err
+	}
+
+	err = s.db.WithContext(ctx).Model(blog).Update("status", req.Status).Error
 	if err != nil {
 		return err
 	}

@@ -63,21 +63,25 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	// 用户存在token登录更新, 不存在token登录创建
 	query, err := s.Query(ctx, NewQueryTokenByUserIdRequest(utils.Int64ToString(token.UserId)))
 	if err != nil {
+		// 返回没找到之外的错误
 		if !errors.Is(err, NotFound) {
 			return nil, err
 		}
 	}
+
 	if query != nil {
-		if err = s.db.WithContext(ctx).Model(&token).Where("user_id", token.UserId).Updates(token).Error; err != nil {
+		if err = s.db.WithContext(ctx).Model(query).Updates(token).Error; err != nil {
 			return nil, err
 		}
+
+		return query, nil
 	} else {
 		if err = s.db.WithContext(ctx).Create(token).Error; err != nil {
 			return nil, err
 		}
-	}
 
-	return token, err
+		return token, err
+	}
 }
 
 func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutOrRefreshRequest) error {
@@ -86,23 +90,16 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutOrRefreshRequest) e
 		return err
 	}
 
-	var token *Token
-	err := s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
-		req.AccessToken,
-		req.RefreshToken,
-	).First(&token).Error
+	token, err := s.Query(ctx, NewQueryTokenByAccessTokenAndRefreshRequest(req.AccessToken, req.RefreshToken))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return NotFound
+		if errors.Is(err, NotFound) {
+			return InvalidToken
 		}
 		return err
 	}
 
 	// 删除token
-	err = s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?",
-		token.AccessToken,
-		token.RefreshToken,
-	).Delete(&token).Error
+	err = s.db.WithContext(ctx).Delete(&token).Error
 	if err != nil {
 		return err
 	}
@@ -121,9 +118,11 @@ func (s *ServiceImpl) Query(ctx context.Context, req *QueryTokenRequest) (*Token
 
 	switch req.QueryBy {
 	case QueryByUserId:
-		query = query.Where("user_id = ?", req.QueryByValue)
+		query = query.Where("user_id = ?", req.QueryByValue...)
 	case QueryByAccessToken:
-		query = query.Where("access_token = ?", req.QueryByValue)
+		query = query.Where("access_token = ?", req.QueryByValue...)
+	case QueryByAccessTokenAndRefreshToken:
+		query = query.Where("access_token = ? AND refresh_token = ?", req.QueryByValue...)
 	}
 
 	if err := query.First(&token).Error; err != nil {
@@ -142,21 +141,15 @@ func (s *ServiceImpl) Refresh(ctx context.Context, req *LogoutOrRefreshRequest) 
 		return nil, err
 	}
 
-	var token *Token
-	err := s.db.WithContext(ctx).Where("access_token = ? AND refresh_token = ?", req.AccessToken, req.RefreshToken).
-		First(&token).
-		Error
+	token, err := s.Query(ctx, NewQueryTokenByAccessTokenAndRefreshRequest(req.AccessToken, req.RefreshToken))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, NotFound
+		if errors.Is(err, NotFound) {
+			return nil, InvalidToken
 		}
 		return nil, err
 	}
 
-	token.Refresh()
-	err = s.db.WithContext(ctx).Model(token).
-		Where("user_id = ?", token.UserId).
-		Update("access_token", token.AccessToken).Error
+	err = s.db.WithContext(ctx).Model(token).Update("access_token", token.Refresh()).Error
 	if err != nil {
 		return nil, err
 	}
@@ -170,9 +163,9 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) (*Token,
 		return nil, err
 	}
 
-	var token *Token
 	// 查询token
-	if err := s.db.WithContext(ctx).Where("access_token = ?", req.AccessToken).First(&token).Error; err != nil {
+	token, err := s.Query(ctx, NewQueryTokenByAccessTokenRequest(req.AccessToken))
+	if err != nil {
 		return nil, InvalidToken
 	}
 

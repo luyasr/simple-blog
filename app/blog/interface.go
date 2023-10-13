@@ -3,6 +3,7 @@ package blog
 import (
 	"context"
 	"encoding/json"
+	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/luyasr/simple-blog/pkg/utils"
 )
@@ -15,6 +16,7 @@ type Service interface {
 	CreateBlog(context.Context, *CreateBlogRequest) (*Blog, error)
 	DeleteBlog(context.Context, *DeleteBlogRequest) error
 	UpdateBlog(context.Context, *UpdateBlogRequest) error
+	UpdateBlogStatus(context.Context, *UpdateBlogStatusRequest) error
 	QueryBlog(context.Context, *QueryBlogRequest) (*Blogs, error)
 	QueryBlogById(context.Context, *QueryBlogByIdRequest) (*Blog, error)
 }
@@ -50,10 +52,20 @@ type UpdateBlogRequest struct {
 	Summary  string            `json:"summary" validate:"omitempty" label:"概要"`
 	Content  string            `json:"content" validate:"omitempty" label:"内容"`
 	Tags     map[string]string `json:"tags" validate:"omitempty" label:"标签"`
+	Scope    *common.Scope     `json:"scope"`
 }
 
 func NewUpdateBlogRequest() *UpdateBlogRequest {
 	return &UpdateBlogRequest{}
+}
+
+type UpdateBlogStatusRequest struct {
+	BlogId int64  `json:"blog_id"`
+	Status Status `json:"status"`
+}
+
+func NewUpdateBlogStatusRequest() *UpdateBlogStatusRequest {
+	return &UpdateBlogStatusRequest{}
 }
 
 type QueryBlogRequest struct {

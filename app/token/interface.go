@@ -24,20 +24,27 @@ type LogoutOrRefreshRequest struct {
 
 type QueryTokenRequest struct {
 	QueryBy      QueryBy `json:"query_by"`
-	QueryByValue string  `json:"query_by_value"`
+	QueryByValue []any   `json:"query_by_value"`
 }
 
 func NewQueryTokenByUserIdRequest(id string) *QueryTokenRequest {
 	return &QueryTokenRequest{
 		QueryBy:      QueryByUserId,
-		QueryByValue: id,
+		QueryByValue: []any{id},
 	}
 }
 
 func NewQueryTokenByAccessTokenRequest(accessToken string) *QueryTokenRequest {
 	return &QueryTokenRequest{
 		QueryBy:      QueryByAccessToken,
-		QueryByValue: accessToken,
+		QueryByValue: []any{accessToken},
+	}
+}
+
+func NewQueryTokenByAccessTokenAndRefreshRequest(accessToken string, refreshToken string) *QueryTokenRequest {
+	return &QueryTokenRequest{
+		QueryBy:      QueryByAccessTokenAndRefreshToken,
+		QueryByValue: []any{accessToken, refreshToken},
 	}
 }
 

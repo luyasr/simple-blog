@@ -8,14 +8,15 @@ import (
 )
 
 type Token struct {
+	Id                    int64  `json:"id"`
 	UserId                int64  `json:"user_id" validate:"required"`
 	Username              string `json:"username" validate:"required"`
 	AccessToken           string `json:"access_token" validate:"required"`
 	AccessTokenExpiredAt  int    `json:"access_token_expired_at" validate:"required"`
 	RefreshToken          string `json:"refresh_token" validate:"required"`
 	RefreshTokenExpiredAt int    `json:"refresh_token_expired_at" validate:"required"`
-	CreatedAt             int64  `json:"created_at" gorm:"autoUpdateTime"`
-	UpdatedAt             int64  `json:"updated_at" gorm:"autoUpdateTime"`
+	CreateAt              int64  `json:"create_at" gorm:"autoCreateTime"`
+	UpdateAt              int64  `json:"update_at" gorm:"autoUpdateTime"`
 }
 
 func (t *Token) TableName() string {
@@ -30,16 +31,16 @@ func (t *Token) String() string {
 	return string(bytes)
 }
 
-func (t *Token) Refresh() {
-	t.AccessToken = xid.New().String()
+func (t *Token) Refresh() string {
+	return xid.New().String()
 }
 
 func (t *Token) AccessTokenExpiredTime() time.Time {
-	return time.Unix(t.UpdatedAt, 0).Add(time.Duration(t.AccessTokenExpiredAt) * time.Second)
+	return time.Unix(t.UpdateAt, 0).Add(time.Duration(t.AccessTokenExpiredAt) * time.Second)
 }
 
 func (t *Token) RefreshTokenExpiredTime() time.Time {
-	return time.Unix(t.CreatedAt, 0).Add(time.Duration(t.RefreshTokenExpiredAt) * time.Second)
+	return time.Unix(t.CreateAt, 0).Add(time.Duration(t.RefreshTokenExpiredAt) * time.Second)
 }
 
 func NewToken() *Token {
