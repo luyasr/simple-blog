@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
-	"net/http"
 )
 
 func init() {
@@ -39,15 +38,15 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	req := NewCreateUserRequest()
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
 	createUser, err := h.service.CreateUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(200, response.NewResponse(createUser))
+	response.JSON(c, createUser)
 }
 
 func (h *Handler) DeleteUser(c *gin.Context) {
@@ -55,10 +54,10 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 	req := NewDeleteUserRequest(id)
 	err := h.service.DeleteUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(nil))
+	response.JSON(c, nil)
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {
@@ -67,23 +66,24 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
+
 	err = h.service.UpdateUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(nil))
+	response.JSON(c, nil)
 }
 
 func (h *Handler) QueryUser(c *gin.Context) {
 	req := NewQueryUserRequestById(c.Param("id"))
-	describeUser, err := h.service.QueryUser(c.Request.Context(), req)
+	user, err := h.service.QueryUser(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(describeUser))
+	response.JSON(c, user)
 }

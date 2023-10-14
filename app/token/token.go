@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/luyasr/simple-blog/app/user"
 	"github.com/luyasr/simple-blog/config"
+	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/luyasr/simple-blog/pkg/validate"
@@ -177,4 +178,16 @@ func (s *ServiceImpl) Validate(ctx context.Context, req *ValidateToken) (*Token,
 	}
 
 	return token, nil
+}
+
+func (s *ServiceImpl) GetTokenByContext(ctx context.Context) (*Token, error) {
+	tokenObj := ctx.Value(GinContextKey)
+	tk, ok := tokenObj.(*Token)
+	if !ok {
+		return nil, e.NewAssertionFailed("not a *Token")
+	}
+	if tk == nil {
+		return nil, CookieNotFound
+	}
+	return tk, nil
 }

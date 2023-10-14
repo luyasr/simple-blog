@@ -37,6 +37,8 @@ func structToMap(result map[string]any, typeOf reflect.Type, valueOf reflect.Val
 			if err != nil {
 				return err
 			}
+		case reflect.Struct:
+			continue
 		}
 	}
 	return nil

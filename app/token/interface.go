@@ -10,6 +10,7 @@ type Service interface {
 	Query(context.Context, *QueryTokenRequest) (*Token, error)
 	Refresh(context.Context, *LogoutOrRefreshRequest) (*Token, error)
 	Validate(context.Context, *ValidateToken) (*Token, error)
+	GetTokenByContext(context.Context) (*Token, error)
 }
 
 type LoginRequest struct {

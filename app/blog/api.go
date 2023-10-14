@@ -6,7 +6,6 @@ import (
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
 	"github.com/luyasr/simple-blog/pkg/utils"
-	"net/http"
 )
 
 func init() {
@@ -35,6 +34,7 @@ func (h *Handler) Registry(r gin.IRouter) {
 		group.POST("", h.CreateBlog)
 		group.DELETE(":id", h.DeleteBlog)
 		group.PUT(":id", h.UpdateBlog)
+		group.POST("publish/:id", h.UpdateBlogStatus)
 
 	}
 }
@@ -43,16 +43,16 @@ func (h *Handler) CreateBlog(c *gin.Context) {
 	req := NewCreateBlogRequest()
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
 
 	blog, err := h.service.CreateBlog(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(blog))
+	response.JSON(c, blog)
 }
 
 func (h *Handler) DeleteBlog(c *gin.Context) {
@@ -61,26 +61,27 @@ func (h *Handler) DeleteBlog(c *gin.Context) {
 
 	err := h.service.DeleteBlog(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(nil))
+	response.JSON(c, nil)
 }
 
 func (h *Handler) UpdateBlog(c *gin.Context) {
 	req := NewUpdateBlogRequest()
-	req.BlogId = utils.StringToInt64(c.Param("id"))
+	req.Id = utils.StringToInt64(c.Param("id"))
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
+
 	err = h.service.UpdateBlog(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(nil))
+	response.JSON(c, nil)
 }
 
 func (h *Handler) QueryBlog(c *gin.Context) {
@@ -96,8 +97,21 @@ func (h *Handler) QueryBlog(c *gin.Context) {
 
 	blogs, err := h.service.QueryBlog(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(blogs))
+	response.JSON(c, blogs)
+}
+
+func (h *Handler) UpdateBlogStatus(c *gin.Context) {
+	req := NewUpdateBlogStatusRequest()
+	req.BlogId = utils.StringToInt64(c.Param("id"))
+	req.Status = StatusPublished
+
+	err := h.service.UpdateBlogStatus(c.Request.Context(), req)
+	if err != nil {
+		response.JSONWithError(c, err)
+		return
+	}
+	response.JSON(c, nil)
 }

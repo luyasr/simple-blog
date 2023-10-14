@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/app/token"
@@ -20,31 +21,26 @@ func NewAuth() *Auth {
 }
 
 func (a *Auth) Auth(c *gin.Context) {
-	// 获取cookie
-	cookie, err := c.Cookie(token.CookieName)
+	// 从cookie中获取access_token
+	accessToken, err := c.Cookie(token.CookieName)
 	if err != nil {
 		if errors.Is(err, http.ErrNoCookie) {
-			c.JSON(http.StatusOK, token.CookieNotFound)
-			c.Abort()
+			response.JSONWithError(c, token.CookieNotFound)
 			return
 		}
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
-		c.Abort()
+		response.JSONWithError(c, err)
 		return
 	}
 
-	validateToken := token.NewValidateToken(cookie)
+	validateToken := token.NewValidateToken(accessToken)
 	tk, err := a.token.Validate(c.Request.Context(), validateToken)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
-		c.Abort()
+		response.JSONWithError(c, err)
 		return
 	}
 
 	// 把鉴权后的token放入请求上下文中
-	if c.Keys == nil {
-		c.Keys = map[string]any{}
-	}
-	c.Keys[token.GinContextKey] = tk
+	ctx := context.WithValue(c.Request.Context(), token.GinContextKey, tk)
+	c.Request = c.Request.WithContext(ctx)
 	c.Next()
 }

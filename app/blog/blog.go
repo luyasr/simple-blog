@@ -4,6 +4,7 @@ import (
 	"context"
 	"dario.cat/mergo"
 	"errors"
+	"github.com/luyasr/simple-blog/app/token"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/utils"
@@ -22,6 +23,7 @@ func init() {
 
 func (s *ServiceImpl) Init() error {
 	s.db = config.C.Mysql.GetConn()
+	s.token = ioc.Controller().Get(token.Name).(token.Service)
 	return nil
 }
 
@@ -30,8 +32,9 @@ func (s *ServiceImpl) Name() string {
 }
 
 type ServiceImpl struct {
-	db  *gorm.DB
-	log zerolog.Logger
+	db    *gorm.DB
+	token token.Service
+	log   zerolog.Logger
 }
 
 func (s *ServiceImpl) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*Blog, error) {
@@ -39,12 +42,20 @@ func (s *ServiceImpl) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*
 		return nil, err
 	}
 
-	ins := NewBlog(req)
-	err := s.db.WithContext(ctx).Create(ins).Error
+	blog := NewBlog(req)
+
+	// 从上下文中获取用户名称作为博客创建者
+	tk, err := s.token.GetTokenByContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return ins, nil
+	req.CreateBy = tk.Username
+
+	err = s.db.WithContext(ctx).Create(blog).Error
+	if err != nil {
+		return nil, err
+	}
+	return blog, nil
 }
 
 func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) error {
@@ -53,12 +64,12 @@ func (s *ServiceImpl) DeleteBlog(ctx context.Context, req *DeleteBlogRequest) er
 	}
 
 	// 删除前先查询是否存在文章
-	blogById, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.Id))
+	blog, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.Id))
 	if err != nil {
 		return err
 	}
 
-	err = s.db.WithContext(ctx).Delete(blogById).Error
+	err = s.db.WithContext(ctx).Delete(blog).Error
 	if err != nil {
 		return err
 	}
@@ -70,17 +81,17 @@ func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) er
 		return err
 	}
 
-	blogById, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.BlogId))
+	blog, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.Id))
 	if err != nil {
 		return err
 	}
 
 	src, _ := utils.StructToMap(req)
-	err = mergo.Map(blogById.CreateBlogRequest, src, mergo.WithOverride)
+	err = mergo.Map(blog.CreateBlogRequest, src, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
-	err = s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.BlogId).Updates(blogById).Error
+	err = s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.Id).Updates(blog).Error
 	if err != nil {
 		return err
 	}
@@ -139,12 +150,22 @@ func (s *ServiceImpl) QueryBlogById(ctx context.Context, req *QueryBlogByIdReque
 	}
 
 	var blog *Blog
-	err := s.db.WithContext(ctx).Where("id = ?", req.Id).First(&blog).Error
+	err := s.db.WithContext(ctx).Where("id = ?", req.Id).Find(&blog).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, NotFound
 		}
 		return nil, err
 	}
+
+	// 只允许用户增删改查修改自己的内容, 否则返回403权限拒绝
+	tk, err := s.token.GetTokenByContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if tk.Username != blog.CreateBy {
+		return nil, PermissionDenied
+	}
+
 	return blog, nil
 }

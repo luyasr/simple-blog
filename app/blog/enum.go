@@ -10,5 +10,6 @@ const (
 )
 
 var (
-	NotFound = e.NewNotFound("blog not found")
+	NotFound         = e.NewNotFound("blog not found")
+	PermissionDenied = e.NewAccessDenied("Permission denied")
 )

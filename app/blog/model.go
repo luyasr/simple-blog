@@ -2,16 +2,12 @@ package blog
 
 import (
 	"encoding/json"
+	"github.com/luyasr/simple-blog/app/common"
 	"github.com/luyasr/simple-blog/pkg/logger"
 )
 
 type Blog struct {
-	// 文章主键id
-	Id int64 `json:"id"`
-	// 文章创建时间
-	CreateAt int64 `json:"create_at" gorm:"autoCreateTime"`
-	// 文章更新时间
-	UpdateAt int64 `json:"update_at" gorm:"autoUpdateTime"`
+	*common.Meta
 	// 文章状态
 	Status Status `json:"status"`
 	// 创建文章的请求

@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
-	"net/http"
 )
 
 func init() {
@@ -37,32 +36,32 @@ func (h *Handler) Login(c *gin.Context) {
 	req := NewLoginRequest()
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
 	ins, err := h.service.Login(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
 
 	// 通过SetCookie直接写入到浏览器客户端
-	c.SetCookie(CookieName, ins.AccessToken, 0, "/", c.GetHeader("domain"), false, true)
+	c.SetCookie(CookieName, ins.AccessToken, 0, "/", "", false, true)
 
-	c.JSON(http.StatusOK, response.NewResponse(ins))
+	response.JSON(c, ins)
 }
 
 func (h *Handler) Logout(c *gin.Context) {
 	req := NewLogoutOrRefreshRequest()
 	err := c.BindJSON(req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
 	err = h.service.Logout(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewResponseWithError(err))
+		response.JSONWithError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(nil))
+	response.JSON(c, nil)
 }

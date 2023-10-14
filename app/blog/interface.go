@@ -3,7 +3,6 @@ package blog
 import (
 	"context"
 	"encoding/json"
-	"github.com/luyasr/simple-blog/common"
 	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/luyasr/simple-blog/pkg/utils"
 )
@@ -24,7 +23,7 @@ type Service interface {
 type CreateBlogRequest struct {
 	Title    string            `json:"title" validate:"required" label:"标题"`
 	Author   string            `json:"author" validate:"required" label:"作者"`
-	CreateBy string            `json:"create_by" validate:"required" label:"用户"`
+	CreateBy string            `json:"create_by" validate:"omitempty" label:"创建用户"`
 	Summary  string            `json:"summary" validate:"required" label:"概要"`
 	Content  string            `json:"content" validate:"required" label:"内容"`
 	Tags     map[string]string `json:"tags" gorm:"serializer:json" validate:"omitempty" label:"标签"`
@@ -45,14 +44,13 @@ func NewDeleteBlogRequest() *DeleteBlogRequest {
 }
 
 type UpdateBlogRequest struct {
-	BlogId   int64             `json:"blogId" validate:"required" label:"博客id"`
+	Id       int64             `json:"id" validate:"required" label:"博客id"`
 	Title    string            `json:"title" validate:"omitempty" label:"标题"`
 	Author   string            `json:"author" validate:"omitempty" label:"作者"`
 	CreateBy string            `json:"create_by" validate:"omitempty" label:"用户"`
 	Summary  string            `json:"summary" validate:"omitempty" label:"概要"`
 	Content  string            `json:"content" validate:"omitempty" label:"内容"`
 	Tags     map[string]string `json:"tags" validate:"omitempty" label:"标签"`
-	Scope    *common.Scope     `json:"scope"`
 }
 
 func NewUpdateBlogRequest() *UpdateBlogRequest {

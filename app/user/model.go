@@ -2,15 +2,15 @@ package user
 
 import (
 	"encoding/json"
+	"github.com/luyasr/simple-blog/app/common"
 	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/luyasr/simple-blog/pkg/utils"
 	"gorm.io/plugin/soft_delete"
 )
 
 type User struct {
-	Id       int64                 `json:"id"`
-	CreateAt int64                 `json:"create_at" gorm:"autoCreateTime"`
-	UpdateAt int64                 `json:"update_at" gorm:"autoUpdateTime"`
+	*common.Meta
+	// 逻辑删除, 有唯一索引的情况下, 需要和唯一索引建立复合索引
 	DeleteAt soft_delete.DeletedAt `json:"delete_at"`
 	*CreateUserRequest
 }
