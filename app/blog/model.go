@@ -10,6 +10,9 @@ type Blog struct {
 	*common.Meta
 	// 文章状态
 	Status Status `json:"status"`
+	// 审核文章的请求
+	AuditAt     int64       `json:"audit_at"`
+	AuditStatus AuditStatus `json:"audit_status"`
 	// 创建文章的请求
 	*CreateBlogRequest
 }

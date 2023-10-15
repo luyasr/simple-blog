@@ -3,7 +3,6 @@ package blog
 import (
 	"context"
 	"dario.cat/mergo"
-	"errors"
 	"github.com/luyasr/simple-blog/app/token"
 	"github.com/luyasr/simple-blog/config"
 	"github.com/luyasr/simple-blog/pkg/ioc"
@@ -11,6 +10,7 @@ import (
 	"github.com/luyasr/simple-blog/pkg/validate"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
+	"time"
 )
 
 var (
@@ -86,14 +86,17 @@ func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) er
 		return err
 	}
 
-	src, _ := utils.StructToMap(req)
-	err = mergo.Map(blog.CreateBlogRequest, src, mergo.WithOverride)
+	err = utils.Merge(blog.CreateBlogRequest, req, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
-	err = s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.Id).Updates(blog).Error
-	if err != nil {
+
+	tx := s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.Id).Updates(blog)
+	if err = tx.Error; err != nil {
 		return err
+	}
+	if affected := tx.RowsAffected; affected == 0 {
+		return UpdateFailed
 	}
 
 	return nil
@@ -104,7 +107,7 @@ func (s *ServiceImpl) UpdateBlogStatus(ctx context.Context, req *UpdateBlogStatu
 		return err
 	}
 
-	blog, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.BlogId))
+	blog, err := s.QueryBlogById(ctx, NewQueryBlogByIdRequest(req.Id))
 	if err != nil {
 		return err
 	}
@@ -150,15 +153,16 @@ func (s *ServiceImpl) QueryBlogById(ctx context.Context, req *QueryBlogByIdReque
 	}
 
 	var blog *Blog
-	err := s.db.WithContext(ctx).Where("id = ?", req.Id).Find(&blog).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, NotFound
-		}
+	// 使用Find不会排序
+	tx := s.db.WithContext(ctx).Where("id = ?", req.Id).Find(&blog)
+	if affected := tx.RowsAffected; affected == 0 {
+		return nil, NotFound
+	}
+	if err := tx.Error; err != nil {
 		return nil, err
 	}
 
-	// 只允许用户增删改查修改自己的内容, 否则返回403权限拒绝
+	// 只允许用户增删改查自己的内容, 否则返回403权限拒绝
 	tk, err := s.token.GetTokenByContext(ctx)
 	if err != nil {
 		return nil, err
@@ -168,4 +172,21 @@ func (s *ServiceImpl) QueryBlogById(ctx context.Context, req *QueryBlogByIdReque
 	}
 
 	return blog, nil
+}
+
+func (s *ServiceImpl) AuditBlog(ctx context.Context, req *AuditBlogRequest) error {
+	if err := validate.Struct(req); err != nil {
+		return err
+	}
+
+	tx := s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.Id).
+		Updates(Blog{AuditAt: time.Now().Unix(), AuditStatus: req.AuditStatus})
+	if err := tx.Error; err != nil {
+		return err
+	}
+	if affected := tx.RowsAffected; affected == 0 {
+		return UpdateFailed
+	}
+
+	return nil
 }

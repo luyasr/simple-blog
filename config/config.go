@@ -52,7 +52,7 @@ func rootPath() string {
 }
 
 func newConfig() {
-	viper.AddConfigPath(fmt.Sprintf("%s", rootPath()))
+	viper.AddConfigPath(rootPath())
 	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

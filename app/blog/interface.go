@@ -18,6 +18,7 @@ type Service interface {
 	UpdateBlogStatus(context.Context, *UpdateBlogStatusRequest) error
 	QueryBlog(context.Context, *QueryBlogRequest) (*Blogs, error)
 	QueryBlogById(context.Context, *QueryBlogByIdRequest) (*Blog, error)
+	AuditBlog(context.Context, *AuditBlogRequest) error
 }
 
 type CreateBlogRequest struct {
@@ -58,7 +59,7 @@ func NewUpdateBlogRequest() *UpdateBlogRequest {
 }
 
 type UpdateBlogStatusRequest struct {
-	BlogId int64  `json:"blog_id"`
+	Id     int64  `json:"id"`
 	Status Status `json:"status"`
 }
 
@@ -81,13 +82,18 @@ func (r *QueryBlogRequest) SetStatus(s Status) {
 }
 
 func (r *QueryBlogRequest) ParsePageSize(pageSize string) {
-	if i := utils.StringToInt(pageSize); i != 0 {
-		r.PageSize = i
+	i := utils.StringToInt(pageSize)
+	switch {
+	case i > 100:
+		i = 100
+	case i <= 0:
+		i = 10
 	}
+	r.PageSize = i
 }
 
 func (r *QueryBlogRequest) ParsePageNumber(pageNumber string) {
-	if i := utils.StringToInt(pageNumber); i != 0 {
+	if i := utils.StringToInt(pageNumber); i <= 0 {
 		r.PageNumber = i
 	}
 }
@@ -128,4 +134,13 @@ func (b *Blogs) Add(items ...*Blog) {
 
 func NewBlogs() *Blogs {
 	return &Blogs{}
+}
+
+type AuditBlogRequest struct {
+	Id          int64       `json:"id" validate:"required"`
+	AuditStatus AuditStatus `json:"audit_status" validate:"required"`
+}
+
+func NewAuditBlogRequest() *AuditBlogRequest {
+	return &AuditBlogRequest{}
 }

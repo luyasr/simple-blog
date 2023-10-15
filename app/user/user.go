@@ -90,18 +90,16 @@ func (s *ServiceImpl) UpdateUser(ctx context.Context, req *UpdateUserRequest) er
 	}
 
 	// 合并结构体
-	src, _ := utils.StructToMap(req)
-	err = mergo.Map(user.CreateUserRequest, src, mergo.WithOverride)
+	err = utils.Merge(user.CreateUserRequest, req, mergo.WithOverride)
 	if err != nil {
 		return err
 	}
 
-	result := s.db.WithContext(ctx).Model(user).Updates(&user)
-	if err := result.Error; err != nil {
+	tx := s.db.WithContext(ctx).Model(user).Updates(&user)
+	if err := tx.Error; err != nil {
 		return err
 	}
-	affected := result.RowsAffected
-	if affected == 0 {
+	if affected := tx.RowsAffected; affected == 0 {
 		return UpdateFailed
 	}
 

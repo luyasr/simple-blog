@@ -23,7 +23,7 @@ type CreateUserRequest struct {
 
 func NewCreateUserRequest() *CreateUserRequest {
 	return &CreateUserRequest{
-		Role: RoleMember,
+		Role: RoleAuthor,
 	}
 }
 

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"dario.cat/mergo"
 	"fmt"
 	"testing"
 )
@@ -10,11 +11,21 @@ type Foo struct {
 	B int64  `json:"b"`
 }
 
-func TestStruct2Map(t *testing.T) {
+func TestStructToMap(t *testing.T) {
 	a := Foo{A: "test", B: 2}
-	m, err := Struct2Map(a)
+	m, err := StructToMap(a)
 	if err != nil {
 		t.Fatal(err)
 	}
 	fmt.Println(m)
+}
+
+func TestMerge(t *testing.T) {
+	a := Foo{A: "", B: 1}
+	b := Foo{A: "b", B: 2}
+	err := Merge(&a, b, mergo.WithOverride)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(a)
 }

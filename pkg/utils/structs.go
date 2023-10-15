@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"dario.cat/mergo"
 	"reflect"
 )
 
@@ -52,4 +53,41 @@ func StructToMap(obj any) (map[string]any, error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+func Merge(dest, src any, opts ...func(*mergo.Config)) error {
+	if reflect.ValueOf(dest).Kind() == reflect.Struct && reflect.DeepEqual(dest, src) {
+		err := mergo.Merge(dest, src, opts...)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	var valueOf reflect.Value
+	if reflect.ValueOf(src).Kind() == reflect.Ptr {
+		valueOf = reflect.ValueOf(src).Elem()
+	}
+
+	switch reflect.ValueOf(valueOf).Kind() {
+	case reflect.Struct:
+		srcMap, err := StructToMap(src)
+		if err != nil {
+			return err
+		}
+		err = mergo.Map(dest, srcMap, opts...)
+		if err != nil {
+			return err
+		}
+	case reflect.Map:
+		err := mergo.Map(dest, src, opts...)
+		if err != nil {
+			return err
+		}
+	default:
+		return mergo.ErrNotSupported
+	}
+
+	return nil
 }

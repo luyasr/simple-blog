@@ -1,10 +1,12 @@
-package middlewares
+package middleware
 
 import (
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/app/token"
+	"github.com/luyasr/simple-blog/app/user"
+	"github.com/luyasr/simple-blog/pkg/e"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
 	"net/http"
@@ -12,6 +14,7 @@ import (
 
 type Auth struct {
 	token token.Service
+	Role  user.Role
 }
 
 func NewAuth() *Auth {
@@ -43,4 +46,28 @@ func (a *Auth) Auth(c *gin.Context) {
 	ctx := context.WithValue(c.Request.Context(), token.GinContextKey, tk)
 	c.Request = c.Request.WithContext(ctx)
 	c.Next()
+}
+
+func (a *Auth) rolePermissions(c *gin.Context) {
+	tk, err := a.token.GetTokenByContext(c.Request.Context())
+	if err != nil {
+		response.JSONWithError(c, err)
+		return
+	}
+
+	if tk.Role == user.RoleAdmin {
+		return
+	}
+
+	if tk.Role != a.Role {
+		response.JSONWithError(c, e.NewAccessDenied("role %v not allow", a.Role))
+		return
+	}
+}
+
+func RolePermissions(role user.Role) gin.HandlerFunc {
+	a := NewAuth()
+	a.Role = role
+
+	return a.rolePermissions
 }

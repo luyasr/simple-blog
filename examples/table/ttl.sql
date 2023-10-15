@@ -27,15 +27,17 @@ CREATE TABLE `tokens`
 
 CREATE TABLE `blogs`
 (
-    `id`        int                                                           NOT NULL AUTO_INCREMENT,
-    `create_at` int                                                           NOT NULL COMMENT '创建时间',
-    `update_at` int                                                           NOT NULL COMMENT '更新时间',
-    `status`    tinyint                                                       NOT NULL COMMENT '状态',
-    `title`     varchar(255)                                                  NOT NULL COMMENT '标题',
-    `author`    varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '作者',
-    `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '创建的用户',
-    `summary`   varchar(255)                                                  NOT NULL COMMENT '概要',
-    `content`   varchar(255)                                                  NOT NULL COMMENT '内容',
-    `tags`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标签',
+    `id`           int                                                           NOT NULL AUTO_INCREMENT,
+    `create_at`    int                                                           NOT NULL COMMENT '创建时间',
+    `update_at`    int                                                           NOT NULL COMMENT '更新时间',
+    `status`       tinyint                                                       NOT NULL COMMENT '状态',
+    `title`        varchar(255)                                                  NOT NULL COMMENT '标题',
+    `author`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '作者',
+    `create_by`    varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '创建的用户',
+    `summary`      varchar(255)                                                  NOT NULL COMMENT '概要',
+    `content`      varchar(255)                                                  NOT NULL COMMENT '内容',
+    `audit_at`     int                                                           NOT NULL COMMENT '审核时间',
+    `audit_status` tinyint                                                       NOT NULL COMMENT '审核状态',
+    `tags`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标签',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

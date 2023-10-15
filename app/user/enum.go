@@ -6,7 +6,7 @@ import "github.com/luyasr/simple-blog/pkg/e"
 type Role int
 
 const (
-	RoleMember Role = iota
+	RoleAuthor Role = iota
 	RoleAdmin
 )
 

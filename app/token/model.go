@@ -3,6 +3,7 @@ package token
 import (
 	"encoding/json"
 	"github.com/luyasr/simple-blog/app/common"
+	"github.com/luyasr/simple-blog/app/user"
 	"github.com/luyasr/simple-blog/pkg/logger"
 	"github.com/rs/xid"
 	"time"
@@ -10,12 +11,13 @@ import (
 
 type Token struct {
 	*common.Meta
-	UserId                int64  `json:"user_id" validate:"required"`
-	Username              string `json:"username" validate:"required"`
-	AccessToken           string `json:"access_token" validate:"required"`
-	AccessTokenExpiredAt  int    `json:"access_token_expired_at" validate:"required"`
-	RefreshToken          string `json:"refresh_token" validate:"required"`
-	RefreshTokenExpiredAt int    `json:"refresh_token_expired_at" validate:"required"`
+	UserId                int64     `json:"user_id" validate:"required"`
+	Username              string    `json:"username" validate:"required"`
+	AccessToken           string    `json:"access_token" validate:"required"`
+	AccessTokenExpiredAt  int       `json:"access_token_expired_at" validate:"required"`
+	RefreshToken          string    `json:"refresh_token" validate:"required"`
+	RefreshTokenExpiredAt int       `json:"refresh_token_expired_at" validate:"required"`
+	Role                  user.Role `gorm:"-"`
 }
 
 func (t *Token) TableName() string {

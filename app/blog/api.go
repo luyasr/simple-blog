@@ -2,7 +2,8 @@ package blog
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/luyasr/simple-blog/app/middlewares"
+	"github.com/luyasr/simple-blog/app/middleware"
+	"github.com/luyasr/simple-blog/app/user"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
 	"github.com/luyasr/simple-blog/pkg/utils"
@@ -30,7 +31,7 @@ func (h *Handler) Registry(r gin.IRouter) {
 	group.Use()
 	{
 		group.GET("", h.QueryBlog)
-		group.Use(middlewares.NewAuth().Auth)
+		group.Use(middleware.NewAuth().Auth, middleware.RolePermissions(user.RoleAuthor))
 		group.POST("", h.CreateBlog)
 		group.DELETE(":id", h.DeleteBlog)
 		group.PUT(":id", h.UpdateBlog)
@@ -105,10 +106,26 @@ func (h *Handler) QueryBlog(c *gin.Context) {
 
 func (h *Handler) UpdateBlogStatus(c *gin.Context) {
 	req := NewUpdateBlogStatusRequest()
-	req.BlogId = utils.StringToInt64(c.Param("id"))
+	req.Id = utils.StringToInt64(c.Param("id"))
 	req.Status = StatusPublished
 
 	err := h.service.UpdateBlogStatus(c.Request.Context(), req)
+	if err != nil {
+		response.JSONWithError(c, err)
+		return
+	}
+	response.JSON(c, nil)
+}
+
+func (h *Handler) AuditBlog(c *gin.Context) {
+	req := NewAuditBlogRequest()
+	req.Id = utils.StringToInt64(c.Param("id"))
+	err := c.BindJSON(req)
+	if err != nil {
+		response.JSONWithError(c, err)
+		return
+	}
+	err = h.service.AuditBlog(c.Request.Context(), req)
 	if err != nil {
 		response.JSONWithError(c, err)
 		return
