@@ -8,13 +8,16 @@ import (
 
 type Blog struct {
 	*common.Meta
+	// 创建文章请求
+	*CreateBlogRequest
+	// 创建用户
+	CreateBy string `json:"create_by"`
 	// 文章状态
 	Status Status `json:"status"`
-	// 审核文章的请求
-	AuditAt     int64       `json:"audit_at"`
+	// 审核时间
+	AuditAt int64 `json:"audit_at"`
+	// 审核状态
 	AuditStatus AuditStatus `json:"audit_status"`
-	// 创建文章的请求
-	*CreateBlogRequest
 }
 
 func (b *Blog) TableName() string {

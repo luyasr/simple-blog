@@ -18,13 +18,10 @@ type Service interface {
 type CreateUserRequest struct {
 	Username string `json:"username" validate:"required,min=3,max=20" label:"用户名"`
 	Password string `json:"password" validate:"required,min=6,max=20" label:"密码"`
-	Role     Role   `json:"role"`
 }
 
 func NewCreateUserRequest() *CreateUserRequest {
-	return &CreateUserRequest{
-		Role: RoleAuthor,
-	}
+	return &CreateUserRequest{}
 }
 
 // DeleteUserRequest 删除用户的请求
@@ -39,10 +36,9 @@ func NewDeleteUserRequest(id string) *DeleteUserRequest {
 }
 
 type UpdateUserRequest struct {
-	Id       string `json:"id"`
+	Id       string `json:"id" validate:"required" label:"用户id"`
 	Username string `json:"username" validate:"omitempty,min=3,max=20" label:"用户名"`
 	Password string `json:"password" validate:"omitempty,min=6,max=20" label:"密码"`
-	Role     Role   `json:"role"`
 }
 
 func NewUpdateUser() *UpdateUserRequest {

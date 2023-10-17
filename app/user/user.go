@@ -46,6 +46,8 @@ func (s *ServiceImpl) CreateUser(ctx context.Context, req *CreateUserRequest) (*
 	if queryUser != nil {
 		return nil, AlreadyExist
 	}
+	// 用户默认角色
+	user.Role = RoleAuthor
 
 	if err := s.db.WithContext(ctx).Create(user).Error; err != nil {
 		return nil, err

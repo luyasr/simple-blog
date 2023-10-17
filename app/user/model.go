@@ -10,9 +10,11 @@ import (
 
 type User struct {
 	*common.Meta
+	*CreateUserRequest
+	// 角色
+	Role Role `json:"role"`
 	// 逻辑删除, 有唯一索引的情况下, 需要和唯一索引建立复合索引
 	DeleteAt soft_delete.DeletedAt `json:"delete_at"`
-	*CreateUserRequest
 }
 
 func (u *User) TableName() string {

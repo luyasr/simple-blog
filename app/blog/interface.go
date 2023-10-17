@@ -22,12 +22,11 @@ type Service interface {
 }
 
 type CreateBlogRequest struct {
-	Title    string            `json:"title" validate:"required" label:"标题"`
-	Author   string            `json:"author" validate:"required" label:"作者"`
-	CreateBy string            `json:"create_by" validate:"omitempty" label:"创建用户"`
-	Summary  string            `json:"summary" validate:"required" label:"概要"`
-	Content  string            `json:"content" validate:"required" label:"内容"`
-	Tags     map[string]string `json:"tags" gorm:"serializer:json" validate:"omitempty" label:"标签"`
+	Author  string            `json:"author" validate:"required" label:"作者"`
+	Title   string            `json:"title" validate:"required" label:"标题"`
+	Summary string            `json:"summary" validate:"required" label:"概要"`
+	Content string            `json:"content" validate:"required" label:"内容"`
+	Tags    map[string]string `json:"tags" gorm:"serializer:json" validate:"omitempty" label:"标签"`
 }
 
 func NewCreateBlogRequest() *CreateBlogRequest {
@@ -45,13 +44,12 @@ func NewDeleteBlogRequest() *DeleteBlogRequest {
 }
 
 type UpdateBlogRequest struct {
-	Id       int64             `json:"id" validate:"required" label:"博客id"`
-	Title    string            `json:"title" validate:"omitempty" label:"标题"`
-	Author   string            `json:"author" validate:"omitempty" label:"作者"`
-	CreateBy string            `json:"create_by" validate:"omitempty" label:"用户"`
-	Summary  string            `json:"summary" validate:"omitempty" label:"概要"`
-	Content  string            `json:"content" validate:"omitempty" label:"内容"`
-	Tags     map[string]string `json:"tags" validate:"omitempty" label:"标签"`
+	Id      int64             `json:"id" validate:"required" label:"博客id"`
+	Author  string            `json:"author" validate:"omitempty" label:"作者"`
+	Title   string            `json:"title" validate:"omitempty" label:"标题"`
+	Summary string            `json:"summary" validate:"omitempty" label:"概要"`
+	Content string            `json:"content" validate:"omitempty" label:"内容"`
+	Tags    map[string]string `json:"tags" validate:"omitempty" label:"标签"`
 }
 
 func NewUpdateBlogRequest() *UpdateBlogRequest {
@@ -68,9 +66,11 @@ func NewUpdateBlogStatusRequest() *UpdateBlogStatusRequest {
 }
 
 type QueryBlogRequest struct {
-	Status     *Status `json:"status" validate:"omitempty" label:"状态"`
-	PageSize   int     `json:"page_size" validate:"omitempty" label:"分页大小"`
-	PageNumber int     `json:"page_number" validate:"omitempty" label:"分页页数"`
+	Status     *Status  `json:"status" validate:"omitempty" label:"状态"`
+	PageSize   int      `json:"page_size" validate:"omitempty" label:"分页大小"`
+	PageNumber int      `json:"page_number" validate:"omitempty" label:"分页页数"`
+	Keywords   string   `json:"keywords" validate:"omitempty" label:"关键词"`
+	Usernames  []string `json:"usernames" validate:"omitempty" label:"用户列表"`
 }
 
 func (r *QueryBlogRequest) Offset() int {
@@ -137,8 +137,8 @@ func NewBlogs() *Blogs {
 }
 
 type AuditBlogRequest struct {
-	Id          int64       `json:"id" validate:"required"`
-	AuditStatus AuditStatus `json:"audit_status" validate:"required"`
+	Id          int64       `json:"id" validate:"required" label:"博客id"`
+	AuditStatus AuditStatus `json:"audit_status" validate:"required" label:"审核状态"`
 }
 
 func NewAuditBlogRequest() *AuditBlogRequest {

@@ -49,7 +49,7 @@ func (s *ServiceImpl) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	req.CreateBy = tk.Username
+	blog.CreateBy = tk.Username
 
 	err = s.db.WithContext(ctx).Create(blog).Error
 	if err != nil {
@@ -130,6 +130,12 @@ func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Bl
 	// 根据请求参数组装查询条件
 	if req.Status != nil {
 		query = query.Where("status = ?", req.Status)
+	}
+	if req.Keywords != "" {
+		query = query.Where("title LIKE ?", "%"+req.Keywords+"%")
+	}
+	if len(req.Usernames) > 0 {
+		query = query.Where("create_by IN ?", req.Usernames)
 	}
 
 	// 查询总数

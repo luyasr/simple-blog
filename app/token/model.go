@@ -11,12 +11,12 @@ import (
 
 type Token struct {
 	*common.Meta
-	UserId                int64     `json:"user_id" validate:"required"`
-	Username              string    `json:"username" validate:"required"`
-	AccessToken           string    `json:"access_token" validate:"required"`
-	AccessTokenExpiredAt  int       `json:"access_token_expired_at" validate:"required"`
-	RefreshToken          string    `json:"refresh_token" validate:"required"`
-	RefreshTokenExpiredAt int       `json:"refresh_token_expired_at" validate:"required"`
+	UserId                int64     `json:"user_id"`
+	Username              string    `json:"username"`
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiredAt  int       `json:"access_token_expired_at"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiredAt int       `json:"refresh_token_expired_at"`
 	Role                  user.Role `gorm:"-"`
 }
 

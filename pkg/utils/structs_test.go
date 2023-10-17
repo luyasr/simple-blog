@@ -21,9 +21,9 @@ func TestStructToMap(t *testing.T) {
 }
 
 func TestMerge(t *testing.T) {
-	a := Foo{A: "", B: 1}
-	b := Foo{A: "b", B: 2}
-	err := Merge(&a, b, mergo.WithOverride)
+	a := Foo{A: "1", B: 1}
+	b := Foo{B: 2}
+	err := Merge(&a, b, mergo.WithOverride, mergo.WithoutDereference)
 	if err != nil {
 		t.Fatal(err)
 	}
