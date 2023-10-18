@@ -12,7 +12,7 @@ type Container struct {
 func (c *Container) Init() error {
 	for _, obj := range c.store {
 		if err := obj.Init(); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
@@ -23,7 +23,9 @@ func (c *Container) Get(name string) any {
 }
 
 func (c *Container) Registry(obj Ioc) {
-	c.store[obj.Name()] = obj
+	if _, exists := c.store[obj.Name()]; !exists {
+		c.store[obj.Name()] = obj
+	}
 }
 
 // RouteRegistry 注册路由到gin route
