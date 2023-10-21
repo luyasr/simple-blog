@@ -14,13 +14,13 @@ export const useTokenStore = defineStore({
   // 异步逻辑
   actions: {
     async login(data: LoginForm) {
-      const resp: any = await LoginReq(data)
-      if (resp.data.code == 0) {
-        this.access_token = resp.data.data.access_token
-        this.refresh_token = resp.data.data.refresh_token
+      const resp = await LoginReq(data)
+      if (resp.code == 0) {
+        this.access_token = resp.data.access_token
+        this.refresh_token = resp.data.refresh_token
         return 'ok'
       } else {
-        return Promise.reject(new Error(resp.data.message))
+        return Promise.reject(new Error(resp.message))
       }
     }
   },
