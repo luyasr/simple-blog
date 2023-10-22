@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { LoginReq } from '../../api/token/index'
-import type { LoginForm } from '../../api/token/type'
+import { LoginReq } from '@/api/token'
+import type { LoginForm } from '@/types/token'
 
 export const useTokenStore = defineStore({
   id: 'token',
