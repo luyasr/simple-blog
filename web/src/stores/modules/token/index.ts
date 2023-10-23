@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia'
 import { LoginReq } from '@/api/token'
-import type { LoginForm } from '@/types/token'
+import type { LoginForm } from '@/types/token/index'
+import type { tokenState } from './types'
 
 export const useTokenStore = defineStore({
   id: 'token',
   // 开启数据持久化
   persist: true,
   // 存储数据
-  state: () => ({
-    access_token: localStorage.getItem('access_token') || '',
-    refresh_token: localStorage.getItem('refresh_token') || ''
+  state: (): tokenState => ({
+    access_token: localStorage.getItem('access_token'),
+    refresh_token: localStorage.getItem('refresh_token'),
   }),
   // 异步逻辑
   actions: {

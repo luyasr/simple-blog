@@ -18,7 +18,7 @@ const (
 var (
 	CookieNotFound = e.NewAuthFailed("cookie %s not found", CookieName)
 	NotFound       = e.NewNotFound("token not found")
-	AuthFailed     = e.NewAuthFailed("账号或密码错误")
+	AuthFailed     = e.NewAuthFailed("incorrect account number or password")
 	InvalidToken   = e.NewAuthFailed("invalid token")
 	ExpiresToken   = e.NewAuthFailed("the token has expired please log in again")
 )

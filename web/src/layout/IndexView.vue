@@ -10,6 +10,7 @@
     <div class="layout-nav">导航栏</div>
     <!-- 内容 -->
     <div class="layout-body">
+      <RouterView />
       内容
       <p style="height: 2000px;;"></p>
     </div>
