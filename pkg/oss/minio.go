@@ -63,6 +63,11 @@ func (m *Minio) GetPresignedURL(ctx context.Context, req *GetPresignedURLRequest
 }
 
 func (m *Minio) CompleteMultipartUpload(ctx context.Context, req *CompleteMultipartUploadRequest) (*minio.UploadInfo, error) {
+	result, _ := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, req.UploadID, 0, 1000)
+	for _, part := range result.ObjectParts {
+		req.CompleteParts = append(req.CompleteParts, minio.CompletePart{PartNumber: part.PartNumber, ETag: part.ETag})
+	}
+
 	uploadInfo, err := m.core.CompleteMultipartUpload(ctx, m.bucketName, req.ObjectName, req.UploadID, req.CompleteParts, minio.PutObjectOptions{})
 	if err != nil {
 		return nil, err

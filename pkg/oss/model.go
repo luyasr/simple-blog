@@ -31,10 +31,10 @@ type GetPresignedURLRequest struct {
 }
 
 func (p *GetPresignedURLRequest) params() url.Values {
-	return url.Values{
-		"uploadId":   []string{p.UploadID},
-		"partNumber": []string{strconv.Itoa(p.PartNumber)},
-	}
+	urlValues := make(url.Values)
+	urlValues.Set("uploadId", p.UploadID)
+	urlValues.Set("partNumber", strconv.Itoa(p.PartNumber))
+	return urlValues
 }
 
 func NewGetPresignedURLRequest() *GetPresignedURLRequest {

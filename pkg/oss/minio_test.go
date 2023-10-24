@@ -2,8 +2,6 @@ package oss
 
 import (
 	"context"
-	"fmt"
-	"github.com/minio/minio-go/v7"
 	"testing"
 )
 
@@ -25,7 +23,7 @@ func TestMinio_MakeBucket(t *testing.T) {
 
 func TestMinio_GetMultipartUploadId(t *testing.T) {
 	req := NewGetMultipartUploadIdRequest()
-	req.ObjectName = "test/头像.jpg"
+	req.ObjectName = "test/c.jpeg"
 
 	uploadId, err := m.GetMultipartUploadId(ctx, req)
 	if err != nil {
@@ -36,8 +34,8 @@ func TestMinio_GetMultipartUploadId(t *testing.T) {
 
 func TestMinio_GetPresignedURL(t *testing.T) {
 	req := NewGetPresignedURLRequest()
-	req.UploadID = "NjAyYmJlYzctYjI0MC00OWIwLThjOTAtMGZjN2QxODhiYzJhLmQxYzIyNzdjLWI4MzYtNGRlZi1iN2Y4LWY2NTQ5ODMyNjIwZg"
-	req.ObjectName = "test/头像.jpg"
+	req.UploadID = "YTIzMjQ3YTAtNjEwZi00YzgyLWFjNjktNmEyNGFkZmRhNmM1Ljc4MjZjM2ZjLWEzM2QtNGIxNS04ZjhhLWE5M2FlMzc5NWU1Yw"
+	req.ObjectName = "test/c.jpeg"
 	req.PartNumber = 1
 	url, err := m.GetPresignedURL(ctx, req)
 	if err != nil {
@@ -48,11 +46,8 @@ func TestMinio_GetPresignedURL(t *testing.T) {
 
 func TestMinio_CompleteMultipartUpload(t *testing.T) {
 	req := NewCompleteMultipartUploadRequest()
-	req.ObjectName = "test/头像.jpg"
-	req.CompleteParts = []minio.CompletePart{{PartNumber: 1}}
-	fmt.Println(req)
-	req.UploadID = "NjAyYmJlYzctYjI0MC00OWIwLThjOTAtMGZjN2QxODhiYzJhLmQxYzIyNzdjLWI4MzYtNGRlZi1iN2Y4LWY2NTQ5ODMyNjIwZg"
-
+	req.ObjectName = "test/c.jpeg"
+	req.UploadID = "YTIzMjQ3YTAtNjEwZi00YzgyLWFjNjktNmEyNGFkZmRhNmM1Ljc4MjZjM2ZjLWEzM2QtNGIxNS04ZjhhLWE5M2FlMzc5NWU1Yw"
 	uploadInfo, err := m.CompleteMultipartUpload(ctx, req)
 	if err != nil {
 		t.Fatal(err)

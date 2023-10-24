@@ -11,6 +11,8 @@ mysql:
 
 minio:
   endpoint: localhost:9000
-  accessKeyID: w89rqJsFURucLp0nKKj8
-  secretAccessKey: E3s0BfoZ3bhA0u3CZ1FERTvz7zgQWVznH5T3FhsY
+#  accessKeyID: w89rqJsFURucLp0nKKj8
+#  secretAccessKey: E3s0BfoZ3bhA0u3CZ1FERTvz7zgQWVznH5T3FhsY
+  accessKeyID: va86bRfan1I1NZxHWx6W
+  secretAccessKey: AZvVBUlj0nMonidgF70pRU06zoop4ZMEsxJSfKRE
   bucketName: simple-blog
