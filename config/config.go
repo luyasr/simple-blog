@@ -3,12 +3,13 @@ package config
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 	"path"
-
 	"runtime"
 	"strings"
 	"sync"
@@ -19,6 +20,7 @@ var C = new(Config)
 type Config struct {
 	Server Server `json:"server"`
 	Mysql  Mysql  `json:"mysql"`
+	Minio  Minio  `json:"minio"`
 }
 
 type Server struct {
@@ -39,6 +41,16 @@ type Mysql struct {
 	Password string `json:"password"`
 	Conn     *gorm.DB
 	Lock     sync.Mutex
+}
+
+type Minio struct {
+	Endpoint        string `json:"endpoint"`
+	AccessKeyID     string `json:"accessKeyID"`
+	SecretAccessKey string `json:"secretAccessKey"`
+	UseSSL          bool   `json:"useSSL"`
+	BucketName      string `json:"bucketName"`
+	Core            *minio.Core
+	Lock            sync.Mutex
 }
 
 func init() {
@@ -76,7 +88,7 @@ func newConfig() {
 	viper.WatchConfig()
 }
 
-func (m *Mysql) DSN() string {
+func (m *Mysql) dsn() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True",
 		m.Username,
 		m.Password,
@@ -97,7 +109,7 @@ func (m *Mysql) GetConn() *gorm.DB {
 		m.Lock.Lock()
 		defer m.Lock.Unlock()
 
-		conn, err := gorm.Open(mysql.Open(m.DSN()), &gorm.Config{
+		conn, err := gorm.Open(mysql.Open(m.dsn()), &gorm.Config{
 			Logger: gormLogMode,
 		})
 		if err != nil {
@@ -108,4 +120,26 @@ func (m *Mysql) GetConn() *gorm.DB {
 	}
 
 	return m.Conn
+}
+
+func (m *Minio) options() *minio.Options {
+	return &minio.Options{
+		Creds:  credentials.NewStaticV4(m.AccessKeyID, m.SecretAccessKey, ""),
+		Secure: m.UseSSL,
+	}
+}
+
+func (m *Minio) NewCore() *minio.Core {
+	if m.Core == nil {
+		m.Lock.Lock()
+		defer m.Lock.Unlock()
+
+		core, err := minio.NewCore(m.Endpoint, m.options())
+		if err != nil {
+			panic(err)
+		}
+		m.Core = core
+	}
+
+	return m.Core
 }

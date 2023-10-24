@@ -22,7 +22,6 @@ func TestServiceImpl_CreateBlog(t *testing.T) {
 	req.Title = "golang"
 	req.Summary = "golang技术栈"
 	req.Content = "err!=nil"
-	req.CreateBy = "admin"
 	req.Author = "admin"
 	blog, err := svc.CreateBlog(ctx, req)
 	if err != nil {

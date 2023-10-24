@@ -8,3 +8,9 @@ mysql:
   database: test
   username: root
   password: 12345678
+
+minio:
+  endpoint: localhost:9000
+  accessKeyID: w89rqJsFURucLp0nKKj8
+  secretAccessKey: E3s0BfoZ3bhA0u3CZ1FERTvz7zgQWVznH5T3FhsY
+  bucketName: simple-blog
