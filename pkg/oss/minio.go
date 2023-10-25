@@ -51,6 +51,18 @@ func (m *Minio) MakeBucket(ctx context.Context) error {
 	return nil
 }
 
+func (m *Minio) getLastUploadID(ctx context.Context, objectName string) (string, error) {
+	var lastUploadID string
+	incompleteUploads := m.core.ListIncompleteUploads(ctx, m.bucketName, objectName, true)
+	for upload := range incompleteUploads {
+		if upload.Err != nil {
+			return "", upload.Err
+		}
+		lastUploadID = upload.UploadID
+	}
+	return lastUploadID, nil
+}
+
 func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest) (*MultipartUploadResponse, error) {
 	var g errgroup.Group
 	var partInfos []PartInfo
@@ -61,18 +73,44 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 		return &MultipartUploadResponse{Uploaded: true}, nil
 	}
 
-	// 获取对象uploadId
-	uploadId, err := m.core.NewMultipartUpload(ctx, m.bucketName, req.ObjectName, minio.PutObjectOptions{
-		ContentType: m.ContentType(req.ObjectName),
-	})
+	// go minio断点续传
+	lastUploadId, err := m.getLastUploadID(ctx, req.ObjectName)
 	if err != nil {
 		return nil, err
+	}
+
+	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, lastUploadId, 0, 10000)
+	if err != nil {
+		return nil, err
+	}
+
+	var uploadId string
+	objParts := make(map[int]struct{})
+	if len(result.ObjectParts) > 0 {
+		for _, part := range result.ObjectParts {
+			objParts[part.PartNumber] = struct{}{}
+		}
+		uploadId = lastUploadId
+	}
+
+	if uploadId == "" {
+		// 获取对象uploadId
+		uploadId, err = m.core.NewMultipartUpload(ctx, m.bucketName, req.ObjectName, minio.PutObjectOptions{
+			ContentType: m.ContentType(req.ObjectName),
+		})
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// 分片预签名
 	partNumbers := m.Sharding(req.Size, req.PartSize)
 	for i := 1; i <= partNumbers; i++ {
 		partNumber := i
+		if _, ok := objParts[partNumber]; ok {
+			continue
+		}
 		g.Go(func() error {
 			urlValues := make(url.Values)
 			urlValues.Set("uploadId", uploadId)

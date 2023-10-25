@@ -12,6 +12,7 @@ type Service interface {
 	MultipartUpload(context.Context, *MultipartUploadRequest) (*MultipartUploadResponse, error)
 	CompleteMultipartUpload(context.Context, *CompleteMultipartUploadRequest) (*minio.UploadInfo, error)
 	AbortMultipartUpload(context.Context, *AbortMultipartUploadRequest) error
+	getLastUploadID(context.Context, string) (string, error)
 }
 
 type Interface interface {
@@ -20,11 +21,12 @@ type Interface interface {
 }
 
 type MultipartUploadRequest struct {
-	ObjectName string `json:"object_name"`
-	SumSHA256  string `json:"sum_SHA256"`
-	Size       int64  `json:"size"`
-	PartSize   int64
-	Expires    time.Duration
+	ObjectName   string `json:"object_name"`
+	SumSHA256    string `json:"sum_SHA256"`
+	Size         int64  `json:"size"`
+	PartSize     int64
+	Expires      time.Duration
+	LastUploadId string
 }
 
 func NewMultipartUploadRequest() *MultipartUploadRequest {
