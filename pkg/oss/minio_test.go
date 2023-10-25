@@ -23,8 +23,8 @@ func TestMinio_MakeBucket(t *testing.T) {
 
 func TestMinio_MultipartUpload(t *testing.T) {
 	req := NewMultipartUploadRequest()
-	req.ObjectName = "avatar/image.jpg"
-	req.Size = 4 * 1024 * 1024
+	req.ObjectName = "avatar/uTools-4.1.0.exe"
+	req.Size = 66883608
 
 	response, err := m.MultipartUpload(ctx, req)
 	if err != nil {
@@ -35,12 +35,23 @@ func TestMinio_MultipartUpload(t *testing.T) {
 
 func TestMinio_CompleteMultipartUpload(t *testing.T) {
 	req := NewCompleteMultipartUploadRequest()
-	req.UploadID = "NjAyYmJlYzctYjI0MC00OWIwLThjOTAtMGZjN2QxODhiYzJhLmRhYzRlZmI4LTFjMzYtNGYzMi05YTQ0LTZiYmZlMzRiNmU4Mg"
-	req.ObjectName = "avatar/image.jpg"
+	req.UploadId = "MzI3YTVkNmUtNTExMy00YzRkLWJhNGEtYmEyNjJiZjRhZmE2LjllYTMwZDYzLTFmZTYtNDRhMi05ZWYzLTI1MDEyNDkwODY3Yg"
+	req.ObjectName = "avatar/uTools-4.1.0.exe"
 
 	info, err := m.CompleteMultipartUpload(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(info)
+}
+
+func TestMinio_AbortMultipartUpload(t *testing.T) {
+	req := NewAbortMultipartUploadRequest()
+	req.UploadId = "MzI3YTVkNmUtNTExMy00YzRkLWJhNGEtYmEyNjJiZjRhZmE2LmYwZTk1MjQ4LTI3MTAtNGZjNi04MTBhLTQyNTFkYWFhMjRlOQ"
+	req.ObjectName = "avatar/uTools-4.1.0.exe"
+
+	err := m.AbortMultipartUpload(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
 }

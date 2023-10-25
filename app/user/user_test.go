@@ -29,7 +29,7 @@ func TestUserServiceImpl_CreateUser(t *testing.T) {
 }
 
 func TestUserServiceImpl_DeleteUser(t *testing.T) {
-	err := userSvc.DeleteUser(ctx, &DeleteUserRequest{ID: 7})
+	err := userSvc.DeleteUser(ctx, &DeleteUserRequest{Id: "7"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestUserServiceImpl_DeleteUser(t *testing.T) {
 
 func TestUserServiceImpl_UpdateUser(t *testing.T) {
 	req := NewUpdateUser()
-	req.ID = 22
+	req.Id = "22"
 	err := userSvc.UpdateUser(ctx, req)
 	if err != nil {
 		t.Fatal(err)
