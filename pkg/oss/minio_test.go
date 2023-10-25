@@ -21,36 +21,26 @@ func TestMinio_MakeBucket(t *testing.T) {
 	}
 }
 
-func TestMinio_GetMultipartUploadId(t *testing.T) {
-	req := NewGetMultipartUploadIdRequest()
-	req.ObjectName = "test/c.jpeg"
+func TestMinio_MultipartUpload(t *testing.T) {
+	req := NewMultipartUploadRequest()
+	req.ObjectName = "avatar/image.jpg"
+	req.Size = 4 * 1024 * 1024
 
-	uploadId, err := m.GetMultipartUploadId(ctx, req)
+	response, err := m.MultipartUpload(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(uploadId)
-}
-
-func TestMinio_GetPresignedURL(t *testing.T) {
-	req := NewGetPresignedURLRequest()
-	req.UploadID = "YTIzMjQ3YTAtNjEwZi00YzgyLWFjNjktNmEyNGFkZmRhNmM1Ljc4MjZjM2ZjLWEzM2QtNGIxNS04ZjhhLWE5M2FlMzc5NWU1Yw"
-	req.ObjectName = "test/c.jpeg"
-	req.PartNumber = 1
-	url, err := m.GetPresignedURL(ctx, req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(url)
+	t.Log(response)
 }
 
 func TestMinio_CompleteMultipartUpload(t *testing.T) {
 	req := NewCompleteMultipartUploadRequest()
-	req.ObjectName = "test/c.jpeg"
-	req.UploadID = "YTIzMjQ3YTAtNjEwZi00YzgyLWFjNjktNmEyNGFkZmRhNmM1Ljc4MjZjM2ZjLWEzM2QtNGIxNS04ZjhhLWE5M2FlMzc5NWU1Yw"
-	uploadInfo, err := m.CompleteMultipartUpload(ctx, req)
+	req.UploadID = "NjAyYmJlYzctYjI0MC00OWIwLThjOTAtMGZjN2QxODhiYzJhLmRhYzRlZmI4LTFjMzYtNGYzMi05YTQ0LTZiYmZlMzRiNmU4Mg"
+	req.ObjectName = "avatar/image.jpg"
+
+	info, err := m.CompleteMultipartUpload(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(uploadInfo)
+	t.Log(info)
 }

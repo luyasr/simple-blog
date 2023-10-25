@@ -15,6 +15,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	golang.org/x/crypto v0.13.0
+	golang.org/x/sync v0.1.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/gorm v1.25.4
 	gorm.io/plugin/soft_delete v1.2.1
