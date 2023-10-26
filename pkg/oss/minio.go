@@ -20,6 +20,11 @@ var (
 	_ Service = (*Minio)(nil)
 )
 
+const (
+	DefaultRegion = "us-east-1"
+	MaxParts      = 10000
+)
+
 type Minio struct {
 	core       *minio.Core
 	bucketName string
@@ -35,7 +40,7 @@ func NewMinio() *Minio {
 }
 
 func (m *Minio) MakeBucket(ctx context.Context) error {
-	err := m.core.MakeBucket(ctx, m.bucketName, minio.MakeBucketOptions{Region: "us-east-1"})
+	err := m.core.MakeBucket(ctx, m.bucketName, minio.MakeBucketOptions{Region: DefaultRegion})
 	if err != nil {
 		exists, errBucketExists := m.core.BucketExists(ctx, m.bucketName)
 		if errBucketExists == nil && exists {
@@ -79,7 +84,7 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 		return nil, err
 	}
 
-	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, lastUploadId, 0, 10000)
+	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, lastUploadId, 0, MaxParts)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +143,7 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 }
 
 func (m *Minio) CompleteMultipartUpload(ctx context.Context, req *CompleteMultipartUploadRequest) (*minio.UploadInfo, error) {
-	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, req.UploadId, 0, 10000)
+	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, req.UploadId, 0, MaxParts)
 	if err != nil {
 		return nil, err
 	}

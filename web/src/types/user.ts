@@ -1,3 +1,14 @@
+export interface UserResp {
+    id: string
+    create_at: number
+    update_at: number
+    delete_at: number
+    username: string
+    password: string
+    avatar: string
+    role: string
+}
+
 export interface LoginForm {
     username: string
     password: string

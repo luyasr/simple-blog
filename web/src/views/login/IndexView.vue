@@ -1,20 +1,19 @@
 <script setup lang='ts'>
 import { reactive, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
-import type { LoginForm } from '@/types/token'
-import { useTokenStore } from '@/stores/modules/token/index'
+import type { LoginForm } from '@/types/user'
+import { useUserStore } from '@/stores/modules/user/index'
 import router from '@/router';
 
 const form = reactive<LoginForm>({ username: "", password: "" })
 const loading = ref(false)
 
-let tokenStore = useTokenStore()
+let userStore = useUserStore()
 const submit = async () => {
   // 登录加载中状态
   loading.value = true
   try {
-    await tokenStore.login(form)
-    Message.info('登录成功')
+    await userStore.login(form)
     router.push('/')
   } catch (error) {
     Message.error(`${error}`)
@@ -71,4 +70,4 @@ const rules = {
     transform: translate(-50%, -50%);
   }
 }
-</style>
+</style>@/stores/modules/user/index@/types/user@/stores/modules/user/user

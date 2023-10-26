@@ -1,17 +1,21 @@
 <script setup lang='ts'>
-
+// 引入左侧菜单子组件
+import Logo from './logo/IndexView.vue'
+import Menu from './menu/IndexView.vue'
 </script>
 
 <template>
   <div class="layout-container">
     <!-- 菜单栏 -->
-    <div class="layout-menu">菜单栏</div>
+    <div class="layout-menu">
+      <Logo />
+      <Menu />
+    </div>
     <!-- 导航栏 -->
     <div class="layout-nav">导航栏</div>
     <!-- 内容 -->
     <div class="layout-body">
       <RouterView />
-      内容
       <p style="height: 2000px;;"></p>
     </div>
   </div>
