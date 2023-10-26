@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import type { LoginForm } from '@/types/user'
-import { useUserStore } from '@/stores/modules/user/index'
+import { useUserStore } from '@/stores/modules/user'
 import router from '@/router';
 
 const form = reactive<LoginForm>({ username: "", password: "" })

@@ -2,6 +2,9 @@
 // 引入左侧菜单子组件
 import Logo from './logo/IndexView.vue'
 import Menu from './menu/IndexView.vue'
+import { useRouteStore } from '@/stores/modules/route';
+// 获取route相关小仓库
+let routeStore = useRouteStore();
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import Menu from './menu/IndexView.vue'
     <!-- 菜单栏 -->
     <div class="layout-menu">
       <Logo />
-      <Menu />
+      <Menu :menuList="routeStore.menuRoutes"> </Menu>
     </div>
     <!-- 导航栏 -->
     <div class="layout-nav">导航栏</div>

@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { onMounted } from 'vue';
-import { useUserStore } from '@/stores/modules/user' 
+import { useUserStore } from '@/stores/modules/user'
 
 onMounted(() => {
   let userStore = useUserStore();
@@ -9,13 +9,9 @@ onMounted(() => {
 </script>
 
 <template>
-
   <div>
     <h1>首页</h1>
   </div>
-
 </template>
 
-<style scoped lang='less'>
-
-</style>
+<style scoped lang='less'></style>
