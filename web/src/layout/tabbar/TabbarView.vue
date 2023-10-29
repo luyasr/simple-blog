@@ -2,7 +2,7 @@
     <div class="layout-breadcrumb">
         <a-space direction="vertical">
             <a-breadcrumb :style="{ margin: '16px 0' }" separator=">">
-                <a-breadcrumb-item v-for="item in $route.matched" :key="item.path" @click="handleClick(item)" :to="{path: '/'}">
+                <a-breadcrumb-item v-for="item in $route.matched" :key="item.path" @click="handleClick(item)">
                     <component style="margin: 0 5px;" :is="item.meta.icon"></component>
                     <span>{{ item.meta.title }}</span>
                 </a-breadcrumb-item>
