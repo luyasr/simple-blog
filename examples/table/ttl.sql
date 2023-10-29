@@ -1,15 +1,19 @@
 CREATE TABLE `users`
 (
-    `id`        int                                                           NOT NULL AUTO_INCREMENT,
-    `username`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
-    `password`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
-    `create_at` int                                                           NOT NULL COMMENT '创建时间',
-    `update_at` int                                                           NOT NULL COMMENT '更新时间',
-    `delete_at` int                                                           NOT NULL COMMENT '删除时间',
-    `role`      tinyint                                                       NOT NULL COMMENT '角色',
+    `id`         int                                     NOT NULL AUTO_INCREMENT,
+    `username`   varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+    `password`   varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+    `create_at`  int                                     NOT NULL COMMENT '创建时间',
+    `update_at`  int                                     NOT NULL COMMENT '更新时间',
+    `delete_at`  int                                     NOT NULL COMMENT '删除时间',
+    `role`       tinyint                                 NOT NULL COMMENT '用户角色',
+    `created_at` bigint                                  DEFAULT NULL,
+    `updated_at` bigint                                  DEFAULT NULL,
+    `deleted_at` datetime(3) DEFAULT NULL,
+    `avatar`     varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用户头像',
     PRIMARY KEY (`id`),
-    KEY         `idx_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    UNIQUE KEY `idx_username_deleted_at` (`username`,`delete_at`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 
 CREATE TABLE `tokens`
 (

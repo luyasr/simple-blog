@@ -1,11 +1,11 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
-import type { LoginForm } from '@/types/user'
+import type { LoginRequest } from '@/types/user'
 import { useUserStore } from '@/stores/modules/user'
-import router from '@/router';
+import router from '@/router'
 
-const form = reactive<LoginForm>({ username: "", password: "" })
+const form = reactive<LoginRequest>({ username: '', password: '' })
 const loading = ref(false)
 
 let userStore = useUserStore()
@@ -14,7 +14,7 @@ const submit = async () => {
   loading.value = true
   try {
     await userStore.login(form)
-    router.push('/')
+    router.push({ name: 'home' })
   } catch (error) {
     Message.error(`${error}`)
   } finally {
@@ -33,14 +33,14 @@ const rules = {
     <div class="login-container">
       <a-form :model="form" auto-label-width @submit-success="submit" :rules="rules">
         <a-form-item field="username" :validate-trigger="['change', 'blur']" :hide-asterisk="true">
-          <a-input v-model="form.username" icon-user placeholder="请输入用户名" @press-enter="submit" allow-clear>
+          <a-input v-model="form.username" icon-user placeholder="请输入用户名" @press-enter="submit">
             <template #prefix>
               <icon-user />
             </template>
           </a-input>
         </a-form-item>
         <a-form-item field="password" :validate-trigger="['change', 'blur']" :hide-asterisk="true">
-          <a-input-password v-model="form.password" placeholder="请输入密码" @press-enter="submit" allow-clear>
+          <a-input-password v-model="form.password" placeholder="请输入密码" @press-enter="submit">
             <template #prefix>
               <icon-lock />
             </template>
@@ -54,7 +54,7 @@ const rules = {
   </div>
 </template>
 
-<style scoped lang='less'>
+<style scoped lang="less">
 .login-wrapper {
   min-width: 100%;
   min-height: 100vh;
@@ -70,4 +70,5 @@ const rules = {
     transform: translate(-50%, -50%);
   }
 }
-</style>@/stores/modules/user/index@/types/user@/stores/modules/user/user
+</style>
+@/stores/modules/user/index@/types/user@/stores/modules/user/user

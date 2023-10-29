@@ -1,5 +1,5 @@
 export default {
-    title: '博客',
-    logo: '/src/assets/images/logo.jpg',
-    hideInLogo: false,
+  title: '散人的博客',
+  logo: '/src/assets/images/logo.jpg',
+  hideInLogo: false
 }

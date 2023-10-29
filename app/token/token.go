@@ -91,7 +91,7 @@ func (s *ServiceImpl) Logout(ctx context.Context, req *LogoutOrRefreshRequest) e
 		return err
 	}
 
-	token, err := s.Query(ctx, NewQueryTokenByAccessTokenAndRefreshRequest(req.AccessToken, req.RefreshToken))
+	token, err := s.Query(ctx, NewQueryByUARRequest(req.UserId, req.AccessToken, req.RefreshToken))
 	if err != nil {
 		if errors.Is(err, NotFound) {
 			return InvalidToken
@@ -122,8 +122,8 @@ func (s *ServiceImpl) Query(ctx context.Context, req *QueryTokenRequest) (*Token
 		query = query.Where("user_id = ?", req.QueryByValue...)
 	case QueryByAccessToken:
 		query = query.Where("access_token = ?", req.QueryByValue...)
-	case QueryByAccessTokenAndRefreshToken:
-		query = query.Where("access_token = ? AND refresh_token = ?", req.QueryByValue...)
+	case QueryByLogoutRequest:
+		query = query.Where("user_id = ? AND access_token = ? AND refresh_token = ?", req.QueryByValue...)
 	}
 
 	if err := query.First(&token).Error; err != nil {
@@ -142,7 +142,7 @@ func (s *ServiceImpl) Refresh(ctx context.Context, req *LogoutOrRefreshRequest) 
 		return nil, err
 	}
 
-	token, err := s.Query(ctx, NewQueryTokenByAccessTokenAndRefreshRequest(req.AccessToken, req.RefreshToken))
+	token, err := s.Query(ctx, NewQueryByUARRequest(req.UserId, req.AccessToken, req.RefreshToken))
 	if err != nil {
 		if errors.Is(err, NotFound) {
 			return nil, InvalidToken

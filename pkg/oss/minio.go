@@ -59,6 +59,7 @@ func (m *Minio) MakeBucket(ctx context.Context) error {
 func (m *Minio) getLastUploadID(ctx context.Context, objectName string) (string, error) {
 	var lastUploadID string
 	incompleteUploads := m.core.ListIncompleteUploads(ctx, m.bucketName, objectName, true)
+
 	for upload := range incompleteUploads {
 		if upload.Err != nil {
 			return "", upload.Err

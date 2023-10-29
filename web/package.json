@@ -14,9 +14,11 @@
   "dependencies": {
     "@vueuse/core": "^10.5.0",
     "axios": "^1.5.1",
+    "dayjs": "^1.11.10",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
     "vue": "^3.3.4",
+    "vue-fullscreen": "^2.6.1",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

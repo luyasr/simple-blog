@@ -7,7 +7,7 @@ type QueryBy int
 const (
 	QueryByUserId QueryBy = iota
 	QueryByAccessToken
-	QueryByAccessTokenAndRefreshToken
+	QueryByLogoutRequest
 )
 
 const (

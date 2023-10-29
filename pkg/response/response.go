@@ -13,10 +13,11 @@ type Response struct {
 }
 
 func JSON(c *gin.Context, data any) {
-	c.JSON(http.StatusOK, Response{Code: 0, Data: data, Message: "success"})
+	c.JSON(http.StatusOK, Response{Code: http.StatusOK, Data: data, Message: "success"})
 }
 
 func JSONWithError(c *gin.Context, err error) {
 	defer c.Abort()
-	c.JSON(http.StatusOK, Response{Code: e.GetCode(err), Data: nil, Message: e.GetMessage(err)})
+	httpCode, bizCode, message := e.GetErrorInfo(err)
+	c.JSON(httpCode, Response{Code: bizCode, Data: nil, Message: message})
 }

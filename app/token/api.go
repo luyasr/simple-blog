@@ -1,9 +1,11 @@
 package token
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
+	"github.com/luyasr/simple-blog/pkg/utils"
 )
 
 func init() {
@@ -28,7 +30,7 @@ func (h *Handler) Registry(r gin.IRouter) {
 	group.Use()
 	{
 		group.POST("", h.Login)
-		group.DELETE("", h.Logout)
+		group.DELETE(":id", h.Logout)
 	}
 }
 
@@ -53,11 +55,13 @@ func (h *Handler) Login(c *gin.Context) {
 
 func (h *Handler) Logout(c *gin.Context) {
 	req := NewLogoutOrRefreshRequest()
+	req.UserId = utils.StringToInt64(c.Param("id"))
 	err := c.BindJSON(req)
 	if err != nil {
 		response.JSONWithError(c, err)
 		return
 	}
+	fmt.Println(req)
 	err = h.service.Logout(c.Request.Context(), req)
 	if err != nil {
 		response.JSONWithError(c, err)

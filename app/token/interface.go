@@ -19,6 +19,7 @@ type LoginRequest struct {
 }
 
 type LogoutOrRefreshRequest struct {
+	UserId       int64  `json:"user_id" validate:"required" label:"用户ID"`
 	AccessToken  string `json:"access_token" validate:"required" label:"登录token"`
 	RefreshToken string `json:"refresh_token" validate:"required" label:"刷新token"`
 }
@@ -42,10 +43,10 @@ func NewQueryTokenByAccessTokenRequest(accessToken string) *QueryTokenRequest {
 	}
 }
 
-func NewQueryTokenByAccessTokenAndRefreshRequest(accessToken string, refreshToken string) *QueryTokenRequest {
+func NewQueryByUARRequest(userId int64, accessToken string, refreshToken string) *QueryTokenRequest {
 	return &QueryTokenRequest{
-		QueryBy:      QueryByAccessTokenAndRefreshToken,
-		QueryByValue: []any{accessToken, refreshToken},
+		QueryBy:      QueryByLogoutRequest,
+		QueryByValue: []any{userId, accessToken, refreshToken},
 	}
 }
 

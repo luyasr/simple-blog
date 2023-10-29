@@ -1,35 +1,50 @@
+import Layout from '../layout/LayoutView.vue'
+
 // 对外暴露的路由
 export const constantRoute = [
   {
     path: '/',
     name: 'layout',
-    component: () => import('../layout/IndexView.vue'),
+    component: Layout,
     meta: {
       title: 'layout',
       requiresAuth: true,
       icon: 'icon-apps',
-      hideInMenu: false
+      hideInMenu: true
     },
     children: [
       {
         path: '/home',
         name: 'home',
-        component: () => import('../views/home/IndexView.vue'),
+        component: () => import('../views/home/HomeView.vue'),
         meta: {
           title: '首页',
           requiresAuth: true,
           icon: 'icon-home',
           hideInMenu: false
         }
-      },
+      }
+    ]
+  },
+  {
+    path: '/blog',
+    name: 'blog',
+    component: Layout,
+    meta: {
+      title: '博客',
+      requiresAuth: true,
+      icon: 'icon-book',
+      hideInMenu: true
+    },
+    children: [
       {
-        path: '/dashboard',
-        name: 'dashboard',
-        component: () => import('../views/home/IndexView.vue'),
+        path: '/blog/article',
+        name: 'article',
+        component: () => import('../views/blog/article/ArticleView.vue'),
         meta: {
-          title: '控制台',
+          title: '文章管理',
           requiresAuth: true,
-          icon: 'icon-dashboard',
+          icon: 'icon-bookmark',
           hideInMenu: false
         }
       }
@@ -38,7 +53,7 @@ export const constantRoute = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/login/IndexView.vue'),
+    component: () => import('../views/login/LoginView.vue'),
     meta: {
       title: '登录',
       hideInMenu: true

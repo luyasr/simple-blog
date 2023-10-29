@@ -93,6 +93,7 @@ func (h *Handler) QueryBlog(c *gin.Context) {
 	case "published":
 		req.SetStatus(StatusPublished)
 	}
+
 	req.ParsePageSize(c.Query("page_size"))
 	req.ParsePageNumber(c.Query("page_number"))
 

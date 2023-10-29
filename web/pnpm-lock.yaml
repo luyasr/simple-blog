@@ -11,6 +11,9 @@ dependencies:
   axios:
     specifier: ^1.5.1
     version: 1.5.1
+  dayjs:
+    specifier: ^1.11.10
+    version: 1.11.10
   pinia:
     specifier: ^2.1.7
     version: 2.1.7(typescript@5.2.2)(vue@3.3.6)
@@ -20,6 +23,9 @@ dependencies:
   vue:
     specifier: ^3.3.4
     version: 3.3.6(typescript@5.2.2)
+  vue-fullscreen:
+    specifier: ^2.6.1
+    version: 2.6.1
   vue-router:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.6)
@@ -1542,7 +1548,6 @@ packages:
 
   /dayjs@1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
-    dev: true
 
   /de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
@@ -2850,6 +2855,11 @@ packages:
       ajv-keywords: 3.5.2(ajv@6.12.6)
     dev: true
 
+  /screenfull@5.2.0:
+    resolution: {integrity: sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==}
+    engines: {node: '>=0.10.0'}
+    dev: false
+
   /scroll-into-view-if-needed@2.2.31:
     resolution: {integrity: sha512-dGCXy99wZQivjmjIqihaBQNjryrz5rueJY7eHfTdyWEiR4ttYpsajb14rn9s5d4DY4EcY6+4+U/maARBXJedkA==}
     dependencies:
@@ -3226,6 +3236,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-fullscreen@2.6.1:
+    resolution: {integrity: sha512-bbMJDKj2ZhsAwLcsvh8oV8WJeqAr2zxTHysvf7H8wSqaJTn5CnHXMSMbP9Tz4L/54I7jNQIdyA7VZ+EKAG+svg==}
+    engines: {node: '>=4', npm: '>=3'}
+    dependencies:
+      screenfull: 5.2.0
+    dev: false
 
   /vue-router@4.2.5(vue@3.3.6):
     resolution: {integrity: sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==}

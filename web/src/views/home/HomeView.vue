@@ -1,11 +1,11 @@
-<script setup lang='ts'>
-import { onMounted } from 'vue';
+<script setup lang="ts">
+import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/modules/user'
 
 onMounted(() => {
-  let userStore = useUserStore();
+  let userStore = useUserStore()
   userStore.userInfo()
-});
+})
 </script>
 
 <template>
@@ -14,4 +14,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped lang='less'></style>
+<style scoped lang="less"></style>

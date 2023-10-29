@@ -94,6 +94,8 @@ func (r *QueryBlogRequest) ParsePageSize(pageSize string) {
 
 func (r *QueryBlogRequest) ParsePageNumber(pageNumber string) {
 	if i := utils.StringToInt(pageNumber); i <= 0 {
+		r.PageNumber = 1
+	} else {
 		r.PageNumber = i
 	}
 }
