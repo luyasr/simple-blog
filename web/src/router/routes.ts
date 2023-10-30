@@ -7,9 +7,9 @@ export const constantRoute = [
     name: 'layout',
     component: Layout,
     meta: {
-      title: 'layout',
+      title: '',
       requiresAuth: true,
-      icon: 'icon-apps',
+      icon: '',
       hideInMenu: true
     },
     children: [
@@ -31,7 +31,7 @@ export const constantRoute = [
     name: 'blog',
     component: Layout,
     meta: {
-      title: 'blog',
+      title: '博客',
       requiresAuth: true,
       icon: 'icon-book',
       hideInMenu: true
@@ -56,6 +56,17 @@ export const constantRoute = [
           title: '文章编辑',
           requiresAuth: true,
           icon: 'icon-bookmark',
+          hideInMenu: false
+        }
+      },
+      {
+        path: '/blog/avatar',
+        name: 'avatar',
+        component: () => import('../views/upload/AvatarView.vue'),
+        meta: {
+          title: '头像上传',
+          requiresAuth: true,
+          icon: 'icon-user',
           hideInMenu: false
         }
       }

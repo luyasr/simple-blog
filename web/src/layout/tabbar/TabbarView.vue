@@ -2,16 +2,20 @@
   <div class="layout-breadcrumb">
     <a-space direction="vertical">
       <a-breadcrumb :style="{ margin: '16px 0' }">
-        <a-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-          <template #separator>
-            <span v-if="item.meta.title">></span>
-          </template>
-          <span>
-            <router-link v-if="item.meta.title" :to="item.path">
+        <template v-for="item in $route.matched" :key="item.path">
+          <a-breadcrumb-item v-if="item.meta.title">
+            <template #separator>
+              <span>></span>
+            </template>
+            <!-- 判断当前组件是否为一级父组件, 如果是就不能跳转 -->
+            <router-link v-if="isTopLevelComponent(item.path)" to="">
               {{ item.meta.title }}
             </router-link>
-          </span>
-        </a-breadcrumb-item>
+            <router-link v-else :to="item.path">
+              {{ item.meta.title }}
+            </router-link>
+          </a-breadcrumb-item>
+        </template>
       </a-breadcrumb>
     </a-space>
   </div>
@@ -21,6 +25,9 @@
 import { useRoute } from 'vue-router'
 
 let $route = useRoute()
+const isTopLevelComponent = (path: string) => {
+  return $route.matched[0].path === path
+}
 </script>
 
 <style scoped lang="less"></style>

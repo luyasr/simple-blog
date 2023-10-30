@@ -24,14 +24,12 @@ let routeStore = useRouteStore()
       <a-layout-header>
         <Header />
       </a-layout-header>
-      <a-layout style="padding: 0 24px;">
+      <a-layout style="padding: 0 24px">
         <Main />
       </a-layout>
     </a-layout>
   </a-layout>
 </template>
-
-
 
 <style scoped lang="less">
 .layout-container {

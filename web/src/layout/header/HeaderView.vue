@@ -1,7 +1,7 @@
 <template>
   <div class="layout-header">
     <div class="layout-header-left">
-        <Tabbar />
+      <Tabbar />
     </div>
     <div class="layout-header-right">
       <a-button
@@ -84,9 +84,9 @@ const handleLogout = async () => {
 }
 
 .layout-header-left {
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
 }
 
 .layout-header-right {
@@ -99,12 +99,8 @@ const handleLogout = async () => {
   background: var(--color-fill-1);
 }
 
-.layout-header > * {
+.layout-header > .layout-header-right > * {
   /* 设置内容间隔为 10 像素 */
   margin-right: 10px;
-}
-
-.hover {
-  color: red;
 }
 </style>

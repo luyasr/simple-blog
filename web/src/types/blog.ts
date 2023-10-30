@@ -43,3 +43,12 @@ export interface Blogs {
   total: number
   items: Blog[]
 }
+
+export enum BlogStatus {
+  // 博客状态：草稿
+  DRAFT = 0,
+  // 博客状态：发布
+  PUBLISH = 1,
+  // 博客状态：删除
+  DELETE = 2,
+}
