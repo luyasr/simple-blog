@@ -31,7 +31,7 @@ export const constantRoute = [
     name: 'blog',
     component: Layout,
     meta: {
-      title: '博客',
+      title: 'blog',
       requiresAuth: true,
       icon: 'icon-book',
       hideInMenu: true
@@ -43,6 +43,17 @@ export const constantRoute = [
         component: () => import('../views/blog/article/ArticleView.vue'),
         meta: {
           title: '文章管理',
+          requiresAuth: true,
+          icon: 'icon-bookmark',
+          hideInMenu: false
+        }
+      },
+      {
+        path: '/blog/markdown',
+        name: 'markdown',
+        component: () => import('../views/markdown/VditorView.vue'),
+        meta: {
+          title: '文章编辑',
           requiresAuth: true,
           icon: 'icon-bookmark',
           hideInMenu: false

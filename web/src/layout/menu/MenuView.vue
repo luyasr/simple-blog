@@ -11,7 +11,7 @@ const handleClick = (key: string) => {
 
 <template>
   <div class="menu">
-    <a-menu :style="{ width: '100%' }" breakpoint="xl" @menu-item-click="handleClick">
+    <a-menu :style="{ width: '100%' }" @menu-item-click="handleClick">
       <template v-for="item in menuList" :key="item.path">
         <!-- 路由隐藏 -->
         <template v-if="!item.meta.hideInMenu">

@@ -2,7 +2,6 @@
 // 引入左侧菜单子组件
 import Logo from './logo/LogoView.vue'
 import Menu from './menu/MenuView.vue'
-import Tabbar from './tabbar/TabbarView.vue'
 import Header from './header/HeaderView.vue'
 import Main from './main/MainView.vue'
 import { useRouteStore } from '@/stores/modules/route'
@@ -26,7 +25,6 @@ let routeStore = useRouteStore()
         <Header />
       </a-layout-header>
       <a-layout style="padding: 0 24px;">
-        <Tabbar />
         <Main />
       </a-layout>
     </a-layout>
