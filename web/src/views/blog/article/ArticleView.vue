@@ -7,9 +7,7 @@
           <a-tag v-if="record.status == BlogStatus.PUBLISH" color="green" bordered>发布</a-tag>
         </template>
         <template #optional="{ record }">
-          <a-button type="primary" @click="$modal.info({ title: 'Name', content: record.title })">
-            编辑
-          </a-button>
+          <a-button type="primary" @click="onEdit(record)">编辑</a-button>
         </template>
       </a-table>
     </div>
@@ -31,7 +29,9 @@
 import { reactive, ref } from 'vue'
 import { useBlogStore } from '@/stores/modules/blog'
 import { onBeforeMount } from 'vue'
-import { type FindAllBlogsRequest, BlogStatus } from '@/types/blog'
+import { BlogStatus } from '@/types/blog'
+import type { FindAllBlogsRequest, UpdateBlogRequest } from '@/types/blog'
+import router from '@/router'
 
 // 查询博客列表参数
 const params = reactive({} as FindAllBlogsRequest)
@@ -90,6 +90,15 @@ const handlePageSizeChange = (pageSize: number) => {
 const handlePageNumberChange = (pageNumber: number) => {
   params.page_number = pageNumber
   findAllBlogs(params)
+}
+
+const onEdit = (record: any) => {
+  let updateBlog: UpdateBlogRequest = {
+    id: record.id,
+    content: record.content
+  }
+  blogStore.setUpdateBlog(updateBlog)
+  router.push('/blog/edit')
 }
 
 // 页面加载前请求博客列表

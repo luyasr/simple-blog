@@ -39,8 +39,8 @@
           <icon-caret-down />
         </a-space>
         <template #content>
-          <a-doption>个人中心</a-doption>
-          <a-doption @click="handleLogout">退出登录</a-doption>
+          <a-doption @click="onUser">个人中心</a-doption>
+          <a-doption @click="onLogout">退出登录</a-doption>
         </template>
       </a-dropdown>
     </div>
@@ -65,7 +65,11 @@ const handleRefresh = () => {
 const el = ref()
 const { toggle } = useFullscreen(el)
 
-const handleLogout = async () => {
+const onUser = () => {
+  router.push({ name: 'user' })
+}
+
+const onLogout = async () => {
   try {
     await userStore.logout()
     router.push({ name: 'login' })

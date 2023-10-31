@@ -49,14 +49,14 @@ export const constantRoute = [
         }
       },
       {
-        path: '/blog/markdown',
-        name: 'markdown',
-        component: () => import('../views/markdown/VditorView.vue'),
+        path: '/blog/edit',
+        name: 'edit',
+        component: () => import('../views/markdown/EditorView.vue'),
         meta: {
           title: '文章编辑',
           requiresAuth: true,
           icon: 'icon-bookmark',
-          hideInMenu: false
+          hideInMenu: true
         }
       },
       {
@@ -66,7 +66,42 @@ export const constantRoute = [
         meta: {
           title: '头像上传',
           requiresAuth: true,
+          icon: 'icon-upload',
+          hideInMenu: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    name: 'system',
+    component: Layout,
+    meta: {
+      title: '系统设置',
+      requiresAuth: true,
+      icon: 'icon-settings',
+      hideInMenu: false
+    },
+    children: [
+      {
+        path: '/system/user',
+        name: 'user',
+        component: () => import('@/views/system/UserView.vue'),
+        meta: {
+          title: '个人中心',
+          requiresAuth: true,
           icon: 'icon-user',
+          hideInMenu: true
+        }
+      },
+      {
+        path: '/system/permissions',
+        name: 'permissions',
+        component: () => import('@/views/system/PermView.vue'),
+        meta: {
+          title: '权限管理',
+          requiresAuth: true,
+          icon: 'icon-lock',
           hideInMenu: false
         }
       }

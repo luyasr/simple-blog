@@ -11,6 +11,15 @@ export interface FindAllBlogsRequest {
   usernames: string[]
 }
 
+export interface UpdateBlogRequest {
+  id: number
+  author?: string
+  title?: string
+  summary?: string
+  content: string
+  tags?: Map<string, string>
+}
+
 export interface Blog {
   // 博客ID
   id: number

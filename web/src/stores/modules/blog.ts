@@ -1,12 +1,13 @@
-import { FindAllBlogs } from '@/api/blog'
-import type { Blogs, FindAllBlogsRequest } from '@/types/blog'
+import { FindAllBlogs, UpdateContent } from '@/api/blog'
+import type { Blogs, FindAllBlogsRequest, UpdateBlogRequest } from '@/types/blog'
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs'
 
 export const useBlogStore = defineStore({
   id: 'blog',
   state: () => ({
-    blogs: {} as Blogs
+    blogs: {} as Blogs,
+    updateBlog: {} as UpdateBlogRequest
   }),
   actions: {
     async findAllBlogs(params: FindAllBlogsRequest) {
@@ -17,6 +18,21 @@ export const useBlogStore = defineStore({
       } else {
         return Promise.reject(new Error(resp.message))
       }
+    },
+    async updateText(text: string) {
+      const data: UpdateBlogRequest = {
+        id: this.updateBlog.id,
+        content: text
+      }
+      const resp = await UpdateContent(data)
+      if (resp.code == 200) {
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(resp.message))
+      }
+    },
+    setUpdateBlog(updateBlog: UpdateBlogRequest) {
+      this.updateBlog = updateBlog
     }
   },
   getters: {

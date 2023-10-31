@@ -62,7 +62,7 @@ func TestServiceImpl_QueryBlogById(t *testing.T) {
 func TestServiceImpl_UpdateBlog(t *testing.T) {
 	req := NewUpdateBlogRequest()
 	req.Id = 6
-	req.Title = "test golang"
+	req.Content = ""
 
 	err := svc.UpdateBlog(ctx, req)
 	if err != nil {
