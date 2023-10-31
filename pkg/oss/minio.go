@@ -71,7 +71,7 @@ func (m *Minio) getLastUploadID(ctx context.Context, objectName string) (string,
 
 func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest) (*MultipartUploadResponse, error) {
 	var g errgroup.Group
-	var partInfos []PartInfo
+	partInfoCh := make(chan PartInfo)
 
 	// 对象是否已经存在
 	_, err := m.core.StatObject(ctx, m.bucketName, req.ObjectName, minio.StatObjectOptions{})
@@ -79,17 +79,19 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 		return &MultipartUploadResponse{Uploaded: true}, nil
 	}
 
-	// go minio断点续传
+	// minio断点续传, 获取上次上传的uploadId
 	lastUploadId, err := m.getLastUploadID(ctx, req.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
+	// 获取对象分片信息
 	result, err := m.core.ListObjectParts(ctx, m.bucketName, req.ObjectName, lastUploadId, 0, MaxParts)
 	if err != nil {
 		return nil, err
 	}
 
+	// 获取已经上传的分片
 	var uploadId string
 	objParts := make(map[int]struct{})
 	if len(result.ObjectParts) > 0 {
@@ -99,6 +101,7 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 		uploadId = lastUploadId
 	}
 
+	// 如果上次uploadId存在已经上传的分片, 则延用上次uploadId
 	if uploadId == "" {
 		// 获取对象uploadId
 		uploadId, err = m.core.NewMultipartUpload(ctx, m.bucketName, req.ObjectName, minio.PutObjectOptions{
@@ -126,12 +129,26 @@ func (m *Minio) MultipartUpload(ctx context.Context, req *MultipartUploadRequest
 			if err != nil {
 				return err
 			}
-			partInfos = append(partInfos, PartInfo{PartNumber: partNumber, PresignURL: partUrl})
+
+			partInfoCh <- PartInfo{PartNumber: partNumber, PresignURL: partUrl}
 
 			return nil
 		})
 	}
 
+	// 等待所有协程执行完毕后关闭通道
+	go func() {
+		_ = g.Wait()
+		close(partInfoCh)
+	}()
+
+	// 从通道中获取分片信息
+	var partInfos []PartInfo
+	for partInfo := range partInfoCh {
+		partInfos = append(partInfos, partInfo)
+	}
+
+	// 获取协程中返回的报错
 	if err = g.Wait(); err != nil {
 		return nil, err
 	}
