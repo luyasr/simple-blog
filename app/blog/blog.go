@@ -49,6 +49,7 @@ func (s *ServiceImpl) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*
 	if err != nil {
 		return nil, err
 	}
+	blog.Author = tk.Username
 	blog.CreateBy = tk.Username
 
 	err = s.db.WithContext(ctx).Create(blog).Error
@@ -145,7 +146,7 @@ func (s *ServiceImpl) QueryBlog(ctx context.Context, req *QueryBlogRequest) (*Bl
 	}
 
 	// 查询分页
-	err = query.Offset(req.Offset()).Limit(req.PageSize).Find(&blogs.Items).Error
+	err = query.Offset(req.Offset()).Limit(req.PageSize).Order("create_at DESC").Find(&blogs.Items).Error
 	if err != nil {
 		return nil, err
 	}

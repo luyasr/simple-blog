@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { Message } from '@arco-design/web-vue'
 import type { LoginRequest } from '@/types/user'
 import { useUserStore } from '@/stores/modules/user'
 import router from '@/router'
@@ -16,7 +15,7 @@ const submit = async () => {
     await userStore.login(form)
     router.push({ name: 'home' })
   } catch (error) {
-    Message.error(`${error}`)
+    console.log(error) 
   } finally {
     loading.value = false
   }

@@ -1,15 +1,24 @@
-import { FindAllBlogs, UpdateContent } from '@/api/blog'
-import type { Blogs, FindAllBlogsRequest, UpdateBlogRequest } from '@/types/blog'
+import { FindBlogById, FindAllBlogs, CreateBlog, UpdateBlog, DeleteBlog } from '@/api/blog'
+import type { Blog, Blogs, FindAllBlogsRequest } from '@/types/blog'
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs'
 
 export const useBlogStore = defineStore({
   id: 'blog',
   state: () => ({
-    blogs: {} as Blogs,
-    updateBlog: {} as UpdateBlogRequest
+    blog: {} as Blog,
+    blogs: {} as Blogs
   }),
   actions: {
+    async findBlogById(id: number) {
+      const resp = await FindBlogById(id)
+      if (resp.code == 200) {
+        this.blog = resp.data
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(resp.message))
+      }
+    },
     async findAllBlogs(params: FindAllBlogsRequest) {
       const resp = await FindAllBlogs(params)
       if (resp.code == 200) {
@@ -19,20 +28,29 @@ export const useBlogStore = defineStore({
         return Promise.reject(new Error(resp.message))
       }
     },
-    async updateText(text: string) {
-      const data: UpdateBlogRequest = {
-        id: this.updateBlog.id,
-        content: text
-      }
-      const resp = await UpdateContent(data)
+    async createBlog(blog: Blog) {
+      const resp = await CreateBlog(blog)
       if (resp.code == 200) {
         return 'ok'
       } else {
         return Promise.reject(new Error(resp.message))
       }
     },
-    setUpdateBlog(updateBlog: UpdateBlogRequest) {
-      this.updateBlog = updateBlog
+    async updateBlog(blog: Blog) {
+      const resp = await UpdateBlog(blog)
+      if (resp.code == 200) {
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(resp.message))
+      }
+    },
+    async deleteBlog(id: number) {
+      const resp = await DeleteBlog(id)
+      if (resp.code == 200) {
+        return 'ok'
+      } else {
+        return Promise.reject(new Error(resp.message))
+      }
     }
   },
   getters: {

@@ -39,7 +39,7 @@ export const constantRoute = [
     children: [
       {
         path: '/blog/article',
-        name: 'article',
+        name: 'blogArticle',
         component: () => import('../views/blog/article/ArticleView.vue'),
         meta: {
           title: '文章管理',
@@ -50,8 +50,8 @@ export const constantRoute = [
       },
       {
         path: '/blog/edit',
-        name: 'edit',
-        component: () => import('../views/markdown/EditorView.vue'),
+        name: 'blogEdit',
+        component: () => import('../views/blog/article/EditView.vue'),
         meta: {
           title: '文章编辑',
           requiresAuth: true,
@@ -61,7 +61,7 @@ export const constantRoute = [
       },
       {
         path: '/blog/avatar',
-        name: 'avatar',
+        name: 'blogAvatar',
         component: () => import('../views/upload/AvatarView.vue'),
         meta: {
           title: '头像上传',

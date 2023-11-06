@@ -11,6 +11,7 @@ export const useUserStore = defineStore({
   state: (): UserState => ({
     access_token: localStorage.getItem('access_token'),
     refresh_token: localStorage.getItem('refresh_token'),
+    isAuthenticated: false,
     user_id: 0,
     username: '',
     avatar: ''
@@ -24,6 +25,7 @@ export const useUserStore = defineStore({
         this.username = resp.data.username
         this.access_token = resp.data.access_token
         this.refresh_token = resp.data.refresh_token
+        this.isAuthenticated = true
         return 'ok'
       } else {
         return Promise.reject(new Error(resp.message))

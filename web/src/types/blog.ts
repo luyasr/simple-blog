@@ -1,23 +1,14 @@
 export interface FindAllBlogsRequest {
   // 博客状态
-  status: number
+  status?: number
   // 博客分页大小
-  page_size: number
+  page_size?: number
   // 博客分页页码
-  page_number: number
+  page_number?: number
   // 博客查询关键字
-  keywords: string
+  keywords?: string
   // 博客用户数组
-  usernames: string[]
-}
-
-export interface UpdateBlogRequest {
-  id: number
-  author?: string
-  title?: string
-  summary?: string
-  content: string
-  tags?: Map<string, string>
+  usernames?: string[]
 }
 
 export interface Blog {
@@ -59,5 +50,5 @@ export enum BlogStatus {
   // 博客状态：发布
   PUBLISH = 1,
   // 博客状态：删除
-  DELETE = 2,
+  DELETE = 2
 }

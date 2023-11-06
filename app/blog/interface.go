@@ -22,7 +22,7 @@ type Service interface {
 }
 
 type CreateBlogRequest struct {
-	Author  string            `json:"author" validate:"required" label:"作者"`
+	Author  string            `json:"author" validate:"omitempty" label:"作者"`
 	Title   string            `json:"title" validate:"required" label:"标题"`
 	Summary string            `json:"summary" validate:"required" label:"概要"`
 	Content string            `json:"content" validate:"required" label:"内容"`

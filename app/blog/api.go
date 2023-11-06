@@ -32,6 +32,7 @@ func (h *Handler) Registry(r gin.IRouter) {
 	{
 		group.GET("", h.QueryBlog)
 		group.Use(middleware.NewAuth().Auth, middleware.RolePermissions(user.RoleAuthor))
+		group.GET(":id", h.QueryBlogById)
 		group.POST("", h.CreateBlog)
 		group.DELETE(":id", h.DeleteBlog)
 		group.PUT(":id", h.UpdateBlog)
@@ -85,6 +86,18 @@ func (h *Handler) UpdateBlog(c *gin.Context) {
 	response.JSON(c, nil)
 }
 
+func (h *Handler) QueryBlogById(c *gin.Context) {
+	req := NewQueryBlogByIdRequest(utils.StringToInt64(c.Param("id")))
+	req.Id = utils.StringToInt64(c.Param("id"))
+
+	blog, err := h.service.QueryBlogById(c.Request.Context(), req)
+	if err != nil {
+		response.JSONWithError(c, err)
+		return
+	}
+	response.JSON(c, blog)
+}
+
 func (h *Handler) QueryBlog(c *gin.Context) {
 	req := NewQueryBlogRequest()
 	switch c.Query("status") {
@@ -96,6 +109,7 @@ func (h *Handler) QueryBlog(c *gin.Context) {
 
 	req.ParsePageSize(c.Query("page_size"))
 	req.ParsePageNumber(c.Query("page_number"))
+	req.Keywords = c.Query("keywords")
 
 	blogs, err := h.service.QueryBlog(c.Request.Context(), req)
 	if err != nil {

@@ -34,6 +34,9 @@ func (a *Auth) Auth(c *gin.Context) {
 		response.JSONWithError(c, err)
 		return
 	}
+	if accessToken == "" {
+		accessToken = c.Request.Header.Get(token.CookieName)
+	}
 
 	validateToken := token.NewValidateToken(accessToken)
 	tk, err := a.token.Validate(c.Request.Context(), validateToken)
