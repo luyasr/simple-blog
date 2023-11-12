@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	ioc.Handler().Registry(&Handler{})
+	ioc.HttpHandler().Registry(&Handler{})
 }
 
 func (h *Handler) Init() error {

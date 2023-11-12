@@ -33,7 +33,7 @@ type Minio struct {
 
 func NewMinio() *Minio {
 	return &Minio{
-		core:       config.C.Minio.NewCore(),
+		core:       config.C.Minio.GetCore(),
 		bucketName: config.C.Minio.BucketName,
 		log:        logger.NewConsoleLog(),
 	}

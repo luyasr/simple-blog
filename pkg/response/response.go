@@ -18,6 +18,6 @@ func JSON(c *gin.Context, data any) {
 
 func JSONWithError(c *gin.Context, err error) {
 	defer c.Abort()
-	httpCode, bizCode, message := e.GetErrorInfo(err)
+	httpCode, bizCode, message := e.ParseError(err)
 	c.JSON(httpCode, Response{Code: bizCode, Data: nil, Message: message})
 }

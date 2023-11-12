@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { LoginRequest } from '@/types/user'
-import { useUserStore } from '@/stores/modules/user'
+import { useTokenStore } from '@/stores/modules/token'
 import router from '@/router'
 
 const form = reactive<LoginRequest>({ username: '', password: '' })
 const loading = ref(false)
 
-let userStore = useUserStore()
+let tokenStore = useTokenStore()
 const submit = async () => {
   // 登录加载中状态
   loading.value = true
   try {
-    await userStore.login(form)
+    await tokenStore.login(form)
     router.push({ name: 'home' })
   } catch (error) {
     console.log(error) 
@@ -32,14 +32,14 @@ const rules = {
     <div class="login-container">
       <a-form :model="form" auto-label-width @submit-success="submit" :rules="rules">
         <a-form-item field="username" :validate-trigger="['change', 'blur']" :hide-asterisk="true">
-          <a-input v-model="form.username" icon-user placeholder="请输入用户名" @press-enter="submit">
+          <a-input v-model="form.username" icon-user placeholder="请输入用户名" size="large" @press-enter="submit">
             <template #prefix>
               <icon-user />
             </template>
           </a-input>
         </a-form-item>
         <a-form-item field="password" :validate-trigger="['change', 'blur']" :hide-asterisk="true">
-          <a-input-password v-model="form.password" placeholder="请输入密码" @press-enter="submit">
+          <a-input-password v-model="form.password" placeholder="请输入密码" size="large" @press-enter="submit">
             <template #prefix>
               <icon-lock />
             </template>
@@ -68,6 +68,11 @@ const rules = {
     top: 65%;
     transform: translate(-50%, -50%);
   }
+}
+
+.a-input,
+.a-input-password {
+  border-radius: 10px !important;
 }
 </style>
 @/stores/modules/user/index@/types/user@/stores/modules/user/user

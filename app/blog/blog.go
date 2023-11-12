@@ -92,6 +92,7 @@ func (s *ServiceImpl) UpdateBlog(ctx context.Context, req *UpdateBlogRequest) er
 		return err
 	}
 
+	// TODO 请求参数中的字段不一定都是需要更新的, 需要过滤掉不需要更新的字段
 	tx := s.db.WithContext(ctx).Model(&Blog{}).Where("id = ?", req.Id).Updates(blog)
 	if err = tx.Error; err != nil {
 		return err

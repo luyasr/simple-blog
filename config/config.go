@@ -3,19 +3,21 @@ package config
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/luyasr/simple-blog/pkg/utils"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	gormLogger "gorm.io/gorm/logger"
-	"path"
-	"runtime"
+	"gorm.io/gorm/logger"
 	"strings"
 	"sync"
 )
 
-var C = new(Config)
+var (
+	C                    = new(Config)
+	mysqlOnce, minioOnce sync.Once
+)
 
 type Config struct {
 	Server Server `json:"server"`
@@ -53,18 +55,8 @@ type Minio struct {
 	Lock            sync.Mutex
 }
 
-func init() {
-	newConfig()
-}
-
-func rootPath() string {
-	_, filename, _, _ := runtime.Caller(0)
-	root := path.Dir(path.Dir(filename))
-	return root
-}
-
 func newConfig() {
-	viper.AddConfigPath(rootPath())
+	viper.AddConfigPath(utils.RootPath())
 	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -88,6 +80,10 @@ func newConfig() {
 	viper.WatchConfig()
 }
 
+func (s *Server) Addr() string {
+	return fmt.Sprintf(":%d", s.Port)
+}
+
 func (m *Mysql) dsn() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True",
 		m.Username,
@@ -97,28 +93,27 @@ func (m *Mysql) dsn() string {
 		m.DataBase)
 }
 
-func (m *Mysql) GetConn() *gorm.DB {
-	var gormLogMode gormLogger.Interface
+func (m *Mysql) initDb() {
+	var logMode logger.Interface
 	if C.Server.Debug {
-		gormLogMode = gormLogger.Default.LogMode(gormLogger.Info)
+		logMode = logger.Default.LogMode(logger.Info)
 	} else {
-		gormLogMode = gormLogger.Default.LogMode(gormLogger.Silent)
+		logMode = logger.Default.LogMode(logger.Silent)
 	}
 
-	if m.Conn == nil {
-		m.Lock.Lock()
-		defer m.Lock.Unlock()
-
+	mysqlOnce.Do(func() {
 		conn, err := gorm.Open(mysql.Open(m.dsn()), &gorm.Config{
-			Logger: gormLogMode,
+			Logger: logMode,
 		})
 		if err != nil {
 			panic(err)
 		}
 
 		m.Conn = conn
-	}
+	})
+}
 
+func (m *Mysql) GetConn() *gorm.DB {
 	return m.Conn
 }
 
@@ -129,17 +124,22 @@ func (m *Minio) options() *minio.Options {
 	}
 }
 
-func (m *Minio) NewCore() *minio.Core {
-	if m.Core == nil {
-		m.Lock.Lock()
-		defer m.Lock.Unlock()
-
+func (m *Minio) initCore() {
+	minioOnce.Do(func() {
 		core, err := minio.NewCore(m.Endpoint, m.options())
 		if err != nil {
 			panic(err)
 		}
-		m.Core = core
-	}
 
+		m.Core = core
+	})
+}
+
+func (m *Minio) GetCore() *minio.Core {
 	return m.Core
+}
+
+func init() {
+	newConfig()
+	C.Mysql.initDb()
 }

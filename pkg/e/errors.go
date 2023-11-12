@@ -32,7 +32,7 @@ func New(bizCode int, format string, a ...any) *Error {
 	}
 }
 
-func GetErrorInfo(err error) (int, int, string) {
+func ParseError(err error) (int, int, string) {
 	var eError *Error
 	if errors.As(err, &eError) {
 		return eError.HttpCode, eError.BizCode, eError.Error()

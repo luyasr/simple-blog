@@ -1,7 +1,6 @@
 package token
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/luyasr/simple-blog/pkg/ioc"
 	"github.com/luyasr/simple-blog/pkg/response"
@@ -9,7 +8,7 @@ import (
 )
 
 func init() {
-	ioc.Handler().Registry(&Handler{})
+	ioc.HttpHandler().Registry(&Handler{})
 }
 
 func (h *Handler) Init() error {
@@ -61,7 +60,7 @@ func (h *Handler) Logout(c *gin.Context) {
 		response.JSONWithError(c, err)
 		return
 	}
-	fmt.Println(req)
+
 	err = h.service.Logout(c.Request.Context(), req)
 	if err != nil {
 		response.JSONWithError(c, err)

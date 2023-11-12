@@ -4,7 +4,7 @@ var (
 	controllerContainer = &Container{
 		store: map[string]Ioc{},
 	}
-	handlerContainer = &Container{
+	httpHandlerContainer = &Container{
 		store: map[string]Ioc{},
 	}
 )
@@ -13,6 +13,6 @@ func Controller() *Container {
 	return controllerContainer
 }
 
-func Handler() *Container {
-	return handlerContainer
+func HttpHandler() *Container {
+	return httpHandlerContainer
 }

@@ -51,12 +51,14 @@
 import { ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { useFullscreen } from '@vueuse/core'
+import { useTokenStore } from '@/stores/modules/token'
 import { useUserStore } from '@/stores/modules/user'
 import { useLayoutSettingStore } from '@/stores/modules/setting'
 import Tabbar from '../tabbar/TabbarView.vue'
 import router from '@/router'
 
-let userStore = useUserStore()
+const tokenStore = useTokenStore()
+const userStore = useUserStore()
 let layoutSettingStore = useLayoutSettingStore()
 const handleRefresh = () => {
   layoutSettingStore.refresh = !layoutSettingStore.refresh
@@ -71,7 +73,7 @@ const onUser = () => {
 
 const onLogout = async () => {
   try {
-    await userStore.logout()
+    await tokenStore.logout()
     router.push({ name: 'login' })
   } catch (error) {
     Message.error(`${error}`)

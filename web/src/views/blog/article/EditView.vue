@@ -50,6 +50,7 @@ const rules = {
   summary: [{ required: true, message: '摘要是必填项' }],
   content: [{ required: true, message: '内容是必填项' }]
 }
+
 const handleSubmit = async () => {
   // 如果存在id，则是更新, 否则是创建
   try {
@@ -61,6 +62,7 @@ const handleSubmit = async () => {
       Message.info('未修改')
       return
     }
+
     if (blog.id) {
       await blogStore.updateBlog(blog)
       Message.info('保存成功')
@@ -79,6 +81,7 @@ const findBlogById = async () => {
     title.value = '编辑文章'
     try {
       await blogStore.findBlogById(Number(blogId))
+      blog.id = blogStore.blog.id
       blog.title = blogStore.blog.title
       blog.summary = blogStore.blog.summary
       blog.content = blogStore.blog.content

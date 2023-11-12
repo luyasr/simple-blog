@@ -2,7 +2,7 @@
 
 APP_NAME = simple-blog
 REGISTRY = registry.cn-hangzhou.aliyuncs.com
-NAMESPACE = luyasanr
+NAMESPACE = hubcn
 COMMIT_SHA=$(shell git rev-parse --short HEAD)
 
 all: build

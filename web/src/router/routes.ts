@@ -58,17 +58,6 @@ export const constantRoute = [
           icon: 'icon-bookmark',
           hideInMenu: true
         }
-      },
-      {
-        path: '/blog/avatar',
-        name: 'blogAvatar',
-        component: () => import('../views/upload/AvatarView.vue'),
-        meta: {
-          title: '头像上传',
-          requiresAuth: true,
-          icon: 'icon-upload',
-          hideInMenu: false
-        }
       }
     ]
   },

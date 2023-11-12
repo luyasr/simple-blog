@@ -25,6 +25,7 @@ func init() {
 func (s *ServiceImpl) Init() error {
 	s.db = config.C.Mysql.GetConn()
 	s.user = ioc.Controller().Get(user.Name).(user.Service)
+
 	return nil
 }
 
@@ -43,7 +44,7 @@ func (s *ServiceImpl) Login(ctx context.Context, req *LoginRequest) (*Token, err
 	if err := validate.Struct(req); err != nil {
 		return nil, err
 	}
-
+	s.log.Info().Msg("login")
 	// 查询用户信息
 	byUsername := user.NewQueryUserRequestByUsername(req.Username)
 	u, err := s.user.QueryUser(ctx, byUsername)
